@@ -39,9 +39,11 @@ let justLocked;
 
 let offline;
 
+let cyan, blue, green, orange, purple, red, yellow, grey;
+
 /* Server stuffs */
 
-let socket = io('tetrisbr.ddns.net'); //MODIFY LOCALHOST BY YOUR OWN IP
+let socket = io('localhost:3000'); //MODIFY LOCALHOST BY YOUR OWN IP
 let id;
 let roomPlayersArray = [];
 let allTimeR; // All times ranking

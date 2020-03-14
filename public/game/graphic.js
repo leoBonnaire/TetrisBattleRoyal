@@ -229,3 +229,22 @@ function dispMusicMessage() {
 	textSize(9);
 	text("[P]: play music . [S]: Stop music", xOff + SQ * 0.25, yOff + SQ * 1.5);
 }
+
+function drawPiecePart(color, x, y, wCell) {
+	if(color === COL[0]) {
+		fill(color);
+		rect(x, y, wCell, wCell);
+	}
+	else {
+		let img;
+		if(color === "red") img = red;
+		else if(color === "green") img = green;
+		else if(color === "yellow") img = yellow;
+		else if(color === "cyan") img = cyan;
+		else if(color === "purple") img = purple;
+		else if(color === "blue") img = blue;
+		else if(color === "orange") img = orange;
+		else if(color === COL[1]) img = grey;
+		image(img, x, y, wCell, wCell);
+	}
+}

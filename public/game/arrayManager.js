@@ -22,8 +22,7 @@ function draw2DArray(arr, wCell) {
 
 	for(let i = 0; i < arr.length; i++) {
 		for(let j = 0; j < arr[i].length; j++) {
-			fill(intToCol(arr[i][j]));
-			rect(j * wCell, i * wCell, wCell, wCell);
+			drawPiecePart(intToCol(arr[i][j]), j * wCell, i * wCell, wCell);
 		}
 	}
 	pop();

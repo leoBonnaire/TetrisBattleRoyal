@@ -39,8 +39,7 @@ class Preview {
 		for(let r = 0; r < this.activeTetromino.length; r++){
 			for(let c = 0; c < this.activeTetromino.length; c++){
 				if(this.activeTetromino[r][c]){
-					fill(color);
-					rect((this.x + c) * SQ, (this.y + r) * SQ, SQ, SQ);
+					drawPiecePart(color, (this.x + c) * SQ, (this.y + r) * SQ, SQ);
 				}
 			}
 		}

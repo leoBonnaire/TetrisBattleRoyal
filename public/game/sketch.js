@@ -5,6 +5,17 @@ function play(e) {
 }
 */
 
+function preload() {
+  blue = loadImage('assets/blocks/blue.png');
+	cyan = loadImage('assets/blocks/cyan.png');
+	green = loadImage('assets/blocks/green.png');
+	orange = loadImage('assets/blocks/orange.png');
+	purple = loadImage('assets/blocks/purple.png');
+	red = loadImage('assets/blocks/red.png');
+	yellow = loadImage('assets/blocks/yellow.png');
+  grey = loadImage('assets/blocks/grey.png');
+}
+
 function setup() {
 
 	/* Initiate variables */
