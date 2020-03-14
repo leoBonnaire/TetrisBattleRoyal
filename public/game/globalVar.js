@@ -41,6 +41,8 @@ let offline;
 
 let cyan, blue, green, orange, purple, red, yellow, grey;
 
+let allRooms;
+
 /* Server stuffs */
 
 let socket = io('localhost:3000'); //MODIFY LOCALHOST BY YOUR OWN IP

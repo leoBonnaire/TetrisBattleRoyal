@@ -10,8 +10,6 @@ createAllTimeRanking(); // Fill it with nothing
 let rooms = [];
 let lastEmits = [];
 server.listen(3000); // Listen
-// WARNING: app.listen(80) will NOT work here!
-
 
 app.use(express.static('public'))
 
@@ -188,6 +186,7 @@ io.on('connection', function (socket) {
                 orderAllTimeGlobal();
                 socket.emit('message', "You entered the all times Ranking! You are a legend! Wow.");
              }
+
              global[socket.room].splice(i, 1);
              break;
           }
@@ -199,10 +198,28 @@ io.on('connection', function (socket) {
 
         if(global[socket.room].length < 1)
           delete rooms[socket.room];
+
     });
 
     socket.on('NeedAllTimeRanking', function() {
       socket.emit('allTimeRanking4u', allTimeglobal);
+
+      let allRoomNames = Object.keys(rooms);
+      let roomsToSend = [];
+      for(let i = 0; i < allRoomNames.length; i++) {
+
+        let playerList = [];
+        for(let j = 0; j < rooms[allRoomNames[i]].length; j++) {
+          playerList.push(rooms[allRoomNames[i]][j].pseudo);
+        }
+
+        roomsToSend.push({
+          name: allRoomNames[i],
+          state: rooms[allRoomNames[i]].state,
+          players: playerList
+        });
+      }
+      socket.emit('rooms4u', roomsToSend);
     });
 });
 

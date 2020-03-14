@@ -1,11 +1,11 @@
 /* Main styles */
 
-html, body {margin: 0; height: 100%; overflow: hidden}
+html, body {margin: 0; height: 100%}
 
 body {
 	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
 	margin: 0;
-  background-color:#111111;
+  background-color:#1a1a1a;
   color:#f9f9f9;
 	text-align: center;
 	-webkit-font-smoothing: antialiased;
@@ -15,6 +15,33 @@ body {
 hr {
 	width: 80%;
 	align: center;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Leaderboard */
+#div2 {
+	margin-left: 30%;
+}
+
+/* Active rooms */
+#div3 {
+	margin-left: 45%;
+}
+
+.menuButton {
+	border: 2px solid white;
+	border-radius: 5px;
+	max-width: 500px;
+	transition: all .1s ease-in-out;
+}
+
+.menuButton:hover {
+	transform: scale(1.1);
 }
 
 /* Button style */

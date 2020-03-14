@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Tretis Online</title>
+    <title>Tretis</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="./style.css" />
 
@@ -40,16 +40,16 @@
   </head>
 
   <body>
-    <br><hr><br>
-    <h1>Tretis Battle Royal</h1>
+    <br><br>
+    <a href="../"><img src="/assets/buttons/banner.png" style="max-width: 800px;" href=""></img></a>
     <br><hr><br>
     <% if ( page === "home") { %>
       <div>
         <a href="/br">
-      <img src="/assets/buttons/battle-royale.png" style="max-width: 600px;" href=""></img></a><br><br>
+      <img class="menuButton" src="/assets/buttons/battle-royale.png"></img></a><br><br>
       <a href="javascript:onclick=offline = true; startGame();">
-      <img src="/assets/buttons/play-solo.png" style="max-width: 600px;" ></img></a><br><br>
-      <img src="/assets/buttons/exit.png" style="max-width: 600px;"></img><br><br>
+      <img class="menuButton" src="/assets/buttons/play-solo.png"></img></a><br><br>
+      <img class="menuButton" src="/assets/buttons/exit.png"></img><br><br>
     </div>
       <% } %>
     <% if ( page === "br") { %>
@@ -58,9 +58,7 @@
         <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
         <input id="roomChoice" class="pseudo" type="text" placeholder="Room" pattern=".{1,4}" required title="1-4 characters" name="Room">
 
-        <button class="button" type="submit">Online Play</button>
-        <input type="button" class="button" onclick="offline = true; startGame();" value="Solo play">
-        <p>Best players of all times :</p>
+        <button class="button" type="submit">Join</button><br><br>
     </form>
   </div>
   <div id='room' style="display:none;">

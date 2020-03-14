@@ -199,30 +199,148 @@ function dispDeath() {
 function dispAllTimeRanking() {
 	let listItem;
 
+	/* If it exist, destroy itself */
   if (document.getElementById("div2"))
 		document.getElementById("div2").parentNode.removeChild(document.getElementById("div2"));
 
   // Make a container element for the list
   let listContainer = document.createElement('div');
-  listContainer.setAttribute("id", "div2")
+  listContainer.setAttribute("id", "div2");
 
   // Make the list
-  let listElement = document.createElement('ul');
+  let listElement = document.createElement('table');
+	listElement.align = "left";
 
-  // Add it to the page
-  document.getElementById('homeform').appendChild(listContainer);
-  listContainer.appendChild(listElement);
+	// Create the title : Leaderboard
+	titelContainer = document.createElement("tr");
+	titel = document.createElement('th');
+	titel.colSpan = "2";
+	titel.innerHTML = "Leaderboard";
+	titelContainer.appendChild(titel);
+	listElement.appendChild(titelContainer);
+
+	listItem = document.createElement('tr');
+
+	subListItem1 = document.createElement('th');
+	subListItem2 = document.createElement('th');
+
+	subListItem1.innerHTML = "Score";
+	subListItem2.innerHTML = "Pseudo";
+
+	listItem.appendChild(subListItem1);
+	listItem.appendChild(subListItem2);
+
+	// Add listItem to the listElement
+	listElement.appendChild(listItem);
 
   for (i = 0; i < allTimeR.length; ++i) {
     // create an item for each one
-    listItem = document.createElement('li');
+    listItem = document.createElement('tr');
 
-    // Add the item text
-    listItem.innerHTML = allTimeR[i].score + " : " + allTimeR[i].pseudo;
+		subListItem1 = document.createElement('td');
+		subListItem2 = document.createElement('td');
+
+		subListItem1.innerHTML = allTimeR[i].score;
+		subListItem2.innerHTML = allTimeR[i].pseudo;
+
+		listItem.appendChild(subListItem1);
+		listItem.appendChild(subListItem2);
 
     // Add listItem to the listElement
-    listContainer.appendChild(listItem);
+    listElement.appendChild(listItem);
 	}
+
+	// Add it to the page
+  document.getElementById('homeform').appendChild(listContainer);
+  listContainer.appendChild(listElement);
+}
+
+function displayPlayingRooms() {
+	let listItem;
+
+	/* If it exist, destroy itself */
+  if (document.getElementById("div3"))
+		document.getElementById("div3").parentNode.removeChild(document.getElementById("div3"));
+
+  // Make a container element for the list
+  let listContainer = document.createElement('div');
+  listContainer.setAttribute("id", "div3")
+
+  // Make the list
+  let listElement = document.createElement('table');
+	listElement.align = "left";
+
+	// Create the title : Leaderboard
+	titelContainer = document.createElement("tr");
+	titel = document.createElement('th');
+	titel.colSpan = "4";
+	titel.innerHTML = "Active rooms";
+	titelContainer.appendChild(titel);
+	listElement.appendChild(titelContainer);
+
+	listItem = document.createElement('tr');
+
+	subListItem0 = document.createElement('th');
+	subListItem1 = document.createElement('th');
+	subListItem2 = document.createElement('th');
+	subListItem3 = document.createElement('th');
+
+	subListItem1.innerHTML = "Room";
+	subListItem2.innerHTML = "State";
+	subListItem3.innerHTML = "Players";
+
+	listItem.appendChild(subListItem0);
+	listItem.appendChild(subListItem1);
+	listItem.appendChild(subListItem2);
+	listItem.appendChild(subListItem3);
+
+	// Add listItem to the listElement
+	listElement.appendChild(listItem);
+
+  for (i = 0; i < allRooms.length; ++i) {
+    // create an item for each one
+    listItem = document.createElement('tr');
+
+		subListItem0 = document.createElement('div');
+		sub1subListItem0 = document.createElement('button');
+		sub1subListItem0.setAttribute("onclick",
+			"document.getElementById('roomChoice').value = \""+allRooms[i].name+"\""
+		);
+		sub1subListItem0.innerHTML = "Join";
+		sub2subListItem0 = document.createElement('button');
+		sub2subListItem0.innerHTML = "Spectate";
+		subListItem0.appendChild(sub2subListItem0);
+		// subListItem0.innerHTML += "<br>";
+		subListItem0.appendChild(sub1subListItem0);
+
+		subListItem1 = document.createElement('td');
+		subListItem2 = document.createElement('td');
+		subListItem3 = document.createElement('td');
+
+		subListItem1.innerHTML = allRooms[i].name;
+		subListItem2.innerHTML = allRooms[i].state.toUpperCase();
+
+		if(allRooms[i].players.length === 1)
+			subListItem3.innerHTML = allRooms[i].players[0];
+		else if(allRooms[i].players.length === 2)
+			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1];
+		else if(allRooms[i].players.length === 3)
+			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2];
+		else
+			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2] + " ... (" + allRooms[i].players.length + ")";
+
+		listItem.appendChild(subListItem0);
+		listItem.appendChild(subListItem1);
+		listItem.appendChild(subListItem2);
+		listItem.appendChild(subListItem3);
+
+    // Add listItem to the listElement
+    listElement.appendChild(listItem);
+	}
+
+	// Add it to the page
+  document.getElementById('homeform').appendChild(listContainer);
+  listContainer.appendChild(listElement);
 }
 
 function dispMusicMessage() {

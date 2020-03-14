@@ -83,6 +83,11 @@ socket.on("allTimeRanking4u", function(allTimeGlobal) {
 	dispAllTimeRanking(); // On the menu only
 });
 
+socket.on("rooms4u", function(roomsR) {
+	allRooms = roomsR;
+	displayPlayingRooms();
+});
+
 /* When we receive the global ranking */
 socket.on('classement', function(global) {
 	classement = global; // Update the global ranking
