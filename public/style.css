@@ -1,0 +1,44 @@
+/* Main styles */
+
+html, body {margin: 0; height: 100%; overflow: hidden}
+
+body {
+	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+	margin: 0;
+  background-color:#111111;
+  color:#f9f9f9;
+	text-align: center;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+hr {
+	width: 80%;
+	align: center;
+}
+
+/* Button style */
+.button {
+  background-color: #990099; /* Purple */
+  border: none;
+  border-radius: 300px;
+  color: white;
+  padding: 15px 0px;
+  width: 10%;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+/* Pseudo input bar */
+.pseudo {
+	width: 20%;
+	padding: 12px 20px;
+  margin: 8px 0;
+	display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
