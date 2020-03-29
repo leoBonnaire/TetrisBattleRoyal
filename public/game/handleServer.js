@@ -72,7 +72,7 @@ socket.on('roomPlayers', function(roomPlayers, room) {
 });
 
 socket.on('died', function(idR) {
-	if(idR === id) {
+	if(idR === id && !spectate) {
 		alert("Your AFKness killed you");
 		endGame();
 	}
@@ -80,12 +80,12 @@ socket.on('died', function(idR) {
 
 socket.on("allTimeRanking4u", function(allTimeGlobal) {
 	allTimeR = allTimeGlobal;
-	dispAllTimeRanking(); // On the menu only
+	if(!gameOver && window.location.href.split("/")[3] === "br") dispAllTimeRanking(); // On the menu only
 });
 
 socket.on("rooms4u", function(roomsR) {
 	allRooms = roomsR;
-	displayPlayingRooms();
+	if(!gameOver && window.location.href.split("/")[3] === "br") displayPlayingRooms();
 });
 
 /* When we receive the global ranking */
@@ -102,4 +102,19 @@ socket.on('classement', function(global) {
 		displayInfos();
 		dispOtherBoards();
 	}
-})
+});
+
+socket.on("death", function(isALegend) {
+	if(!spectate) {
+		let scoreSentence = document.getElementById("scoreS");
+		if(isALegend) {
+			scoreSentence.innerHTML = "But you made it to the leaderboard with " + score + " points !";
+			// TODO : Fireworks
+		}
+		else scoreSentence.innerHTML = "You scored " + score + " points.";
+	}
+});
+
+socket.on("stopSpectate", function() {
+	window.location.reload();
+});

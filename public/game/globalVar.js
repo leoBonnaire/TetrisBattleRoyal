@@ -39,13 +39,24 @@ let justLocked;
 
 let offline;
 
+/* Images */
 let cyan, blue, green, orange, purple, red, yellow, grey;
+let logo;
 
 let allRooms;
 
+let spectate = false;
+
+/* Mobile var slide */
+let xBefore;
+let yBefore;
+let timeBefore;
+
 /* Server stuffs */
 
-let socket = io('localhost:3000'); //MODIFY LOCALHOST BY YOUR OWN IP
+// let socket = io('localhost:3000');
+// let socket = io('192.168.1.88:3000');
+let socket = io('hcl0ud.ddns.net:3000');
 let id;
 let roomPlayersArray = [];
 let allTimeR; // All times ranking

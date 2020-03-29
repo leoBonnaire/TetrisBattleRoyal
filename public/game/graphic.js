@@ -18,18 +18,16 @@ function refreshDisplay(full = false) {
 	if(full) {
 		background(51);
 
-		let fieldHeight;
-
-		if(onMobile) fieldHeight = height * 0.8;
-		else fieldHeight = height;
-
-		SQ = fieldHeight / 20;
-
-		buttonWidth = width / 4;
-		buttonHeight = height * 0.1 - 2;
+		if(onMobile) {
+			SQ = width / 15;
+			image(logo, 0, 20 * SQ, width, height - 20 * SQ);
+		}
+		else {
+			SQ = height / 20;
+		}
 
 		displayInfos();
-		if(!offline) dispOtherBoards();
+		if(!offline && !onMobile) dispOtherBoards();
 	}
 
 	draw2DArray(board, SQ);
@@ -157,41 +155,19 @@ function dispPlayerInfos() {
 
 	push();
 
-	if(gameOver) fill("#4d4d4d");
-	else fill("white");
-	text(pseudo + " : ", xOff +  SQ * 0.5, yOff +  SQ * 1);
+		fill("white");
+		if(!spectate) text(pseudo + " : ", xOff +  SQ * 0.5, yOff +  SQ * 1);
+		else text("Spectator", xOff +  SQ * 0.5, yOff +  SQ * 1);
 
-	push();
-	textSize(SQ * 0.75);
-	text(score, xOff +  SQ * 3, yOff +  SQ * 1);
-	textSize(SQ * 0.5);
-	if(!offline) text("Your rank : #" + rank, xOff +  SQ * 0.5, yOff +  SQ * 2.5);
-	pop();
-
-	pop();
-
-}
-
-
-function dispDeath() {
-
-	push();
-
-	stroke("#515151");
-	strokeWeight(5);
-	line(0, 0, 10 * SQ, 20 * SQ);
-	line(10 * SQ, 0, 0, 20 * SQ);
+		push();
+			textSize(SQ * 0.75);
+			if(!spectate) text(score, xOff +  SQ * 3, yOff +  SQ * 1);
+			textSize(SQ * 0.5);
+			if(!offline && !spectate) text("Your rank : #" + rank, xOff +  SQ * 0.5, yOff +  SQ * 2.5);
+			else if (spectate) text("Your rank : Spec", xOff +  SQ * 0.5, yOff +  SQ * 2.5);
+		pop();
 
 	pop();
-
-	buttons.push(new Button (
-		3 * SQ, 9 * SQ,
-		restart,
-		"Restart",
-		4 * SQ, 2 * SQ
-	));
-
-	buttons[buttons.length - 1].show();
 
 }
 
@@ -309,6 +285,9 @@ function displayPlayingRooms() {
 		sub1subListItem0.innerHTML = "Join";
 		sub2subListItem0 = document.createElement('button');
 		sub2subListItem0.innerHTML = "Spectate";
+		sub2subListItem0.setAttribute("onclick",
+			"socket.emit('spectate', \""+allRooms[i].name+"\"); spectate = true;"
+		);
 		subListItem0.appendChild(sub2subListItem0);
 		// subListItem0.innerHTML += "<br>";
 		subListItem0.appendChild(sub1subListItem0);
@@ -341,11 +320,6 @@ function displayPlayingRooms() {
 	// Add it to the page
   document.getElementById('homeform').appendChild(listContainer);
   listContainer.appendChild(listElement);
-}
-
-function dispMusicMessage() {
-	textSize(9);
-	text("[P]: play music . [S]: Stop music", xOff + SQ * 0.25, yOff + SQ * 1.5);
 }
 
 function drawPiecePart(color, x, y, wCell) {

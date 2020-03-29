@@ -199,7 +199,7 @@ class Piece {
 		}
     /* Send the infos to the server when a piece was locked */
     if(!gameOver) {
-      if(!offline) socket.emit('score', score, board);
+      if(!offline && !spectate) socket.emit('score', score, board);
       justLocked = true;
       draw2DArray(board, SQ);
     }

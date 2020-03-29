@@ -14,6 +14,8 @@ function preload() {
 	red = loadImage('assets/blocks/red.png');
 	yellow = loadImage('assets/blocks/yellow.png');
   grey = loadImage('assets/blocks/grey.png');
+
+  logo = loadImage('assets/buttons/banner.png');
 }
 
 function setup() {
@@ -53,6 +55,7 @@ function setup() {
 	}
 
 }
+
 function roomHandler() {
 	// On demande le pseudo au visiteur...
 	pseudo = document.getElementById('pseudo').value;
@@ -74,7 +77,6 @@ function startGame() {
 
 		if(onMobile) {
 			// Actions if the user is on mobile
-			createCommands();
 		} else {
 			// Actions if the user is not on mobile
 		}
@@ -86,9 +88,21 @@ function startGame() {
 }
 
 function endGame() {
-	gameOver = true;
-	dispDeath();
-	if(!offline) socket.emit('lost');
+  if(!spectate) {
+    gameOver = true;
+
+    canvas.elt.style.display = "none";
+    document.getElementById("death").style.display = "block";
+
+    if(!offline) {
+      socket.emit('lost');
+      document.getElementById("brr").style.display = "none";
+    }
+    else {
+      document.getElementById("homeMenu").style.display = "none";
+      document.getElementById("scoreS").innerHTML = "You scored " + score + " points.";
+    }
+  }
 }
 
 function draw() {
@@ -102,16 +116,18 @@ function draw() {
 			// This is executed every delta time
 
 			if(addScore != 0) {
-				if(addScore >= 40) addScore += 10;
+				if(addScore >= 40) addScore = 100;
 				score += addScore;
 
-				deltaT -= 30 * (addScore / 10);
-				deltaT = constrain(deltaT, 250, 1000);
+        console.log(spectate);
 
 				/* Send the infos to the server */
-		    if(!offline) socket.emit('score', score, board);
+		    if(!offline && !spectate) socket.emit('score', score, board);
 				addScore = 0;
 			}
+
+      deltaT -= 1;
+      deltaT = constrain(deltaT, 250, 1000);
 
 			p.moveDown(); // Just drop the piece
 
@@ -123,13 +139,35 @@ function draw() {
 		updatePreview();
 		p.show(p.color);
 	}
-	else if(gameStarted && !offline) {
+}
 
-		displayInfos();
-		dispOtherBoards();
+function mousePressed() {
+  xBefore = mouseX;
+  yBefore = mouseY;
+  timeBefore = (new Date()).getTime();
+}
 
-	}
+function mouseReleased() {
+  let deltaX = mouseX - xBefore;
+  let deltaY = mouseY - yBefore;
 
+  let moveSize = sqrt(deltaX * deltaX + deltaY * deltaY);
+
+  if(moveSize > 40) {
+    if(abs(deltaX) > abs(deltaY)) {
+      if(deltaX > 40) moveR();
+      else if (deltaX < -40) moveL();
+    }
+    else {
+        if(deltaY > 40) {
+           down(); down();
+        }
+    }
+  }
+  else if((new Date()).getTime() - timeBefore > 100) {
+    rotateP();
+    timeBefore = (new Date()).getTime();
+  }
 }
 
 document.addEventListener('keydown', function(e) {
@@ -163,10 +201,6 @@ document.addEventListener('keydown', function(e) {
 }
 );
 
-function mousePressed() {
-	checkButtonPressed(mouseX, mouseY);
-}
-
 /* Movements function */
 function moveR() { p.moveRight(); }
 function moveL() { p.moveLeft(); }
@@ -181,7 +215,6 @@ function centerCanvas() {
 	canvas = createCanvas(windowWidth, windowHeight);
 	canvas.position(0, 0);
 }
-
 
 function windowResized() {
 	if(gameStarted) {

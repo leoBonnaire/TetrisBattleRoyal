@@ -15,7 +15,7 @@
     <script src="./game/globalVar.js"></script>
     <script src="./game/arrayManager.js"></script>
     <script src="./game/graphic.js"></script>
-    <script src="./game/button.js"></script>
+
     <script src="./game/piecesPattern.js"></script>
     <script src="./game/pieces.js"></script>
     <script src="./game/preview.js"></script>
@@ -25,7 +25,7 @@
     <script>
 
       function imReady() {
-        if(!gameStarted) socket.emit('imReady');
+        if(!gameStarted && !spectate) socket.emit('imReady');
         return false;
       }
 
@@ -44,7 +44,7 @@
     <a href="../"><img src="/assets/buttons/banner.png" style="max-width: 800px;" href=""></img></a>
     <br><hr><br>
     <% if ( page === "home") { %>
-      <div>
+      <div id="homeMenu">
         <a href="/br">
       <img class="menuButton" src="/assets/buttons/battle-royale.png"></img></a><br><br>
       <a href="javascript:onclick=offline = true; startGame();">
@@ -53,7 +53,8 @@
     </div>
       <% } %>
     <% if ( page === "br") { %>
-      <div id="homeform">
+<div id="brr">
+  <div id="homeform">
     <form onsubmit="return enteredRoom()">
         <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
         <input id="roomChoice" class="pseudo" type="text" placeholder="Room" pattern=".{1,4}" required title="1-4 characters" name="Room">
@@ -61,11 +62,21 @@
         <button class="button" type="submit">Join</button><br><br>
     </form>
   </div>
-  <div id='room' style="display:none;">
+  <div id='room' style="display: none;">
     <form onsubmit="return imReady()">
       <button class="button" type="submit">Begin the game</button>
     </form>
   </div>
+</div>
       <% } %>
+
+      <div id="death" style="display: none;">
+        <h1><strong>You lost.</strong></h1>
+        <h3 id="scoreS"></h3>
+        <br>
+        <a href="../"><img class="menuButton" src="/assets/buttons/menuButton.png"></img></a>
+      </div>
+
+
   </body>
 </html>
