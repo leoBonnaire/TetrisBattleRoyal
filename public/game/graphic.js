@@ -1,8 +1,10 @@
 
 /* Define the tetromino's color */
 const COL = [
-	"#333333", // Default color
+	"#4d4d4d", // Default color
 	"#515151", // Preview color
+	"#737373", // Added Row colors
+	/* Piece colors : */
 	"red",
 	"green",
 	"yellow",
@@ -27,7 +29,13 @@ function refreshDisplay(full = false) {
 		}
 
 		displayInfos();
-		if(!offline && !onMobile) dispOtherBoards();
+		if(!onMobile)  {
+			push();
+			translate(xOff + 15 * SQ, 0);
+			image(ingameBg, 0, 0, 1920 / 2, 1698 / 2);
+			pop();
+			if(!offline) dispOtherBoards();
+		}
 	}
 
 	draw2DArray(board, SQ);
@@ -59,6 +67,7 @@ function dispOtherBoards() {
 	push();
 
 	translate(xOff + 15 * SQ, 0);
+	image(ingameBg, 0, 0, 1920 / 2, 1698 / 2);
 
 	let numberOfRows = 2;
 
@@ -67,37 +76,27 @@ function dispOtherBoards() {
 
 	let maxXBoard = floor((width - 15 * SQ) / oWidthBoard);
 
-	fill("#262626");
-	rect(0, 0, width, height);
-
 	textSize(oSQ);
-	fill("white");
 
 	push();
 	for(let j = 0; j < numberOfRows; j++) {
 		for(let i = 0; i < maxXBoard; i++) {
-			if(j * maxXBoard + i >= classement.length) {
-				j = numberOfRows + 1;
-				break;
+			if(typeof(classement[j * maxXBoard + i]) !== 'undefined') {
+				fill(255);
+				stroke(51);
+				draw2DArray(classement[j * maxXBoard + i].board, oSQ);
+			 	text(classement[j * maxXBoard + i].pseudo, oSQ, 2 * oSQ);
+				noFill();
+				stroke(255);
+				rect(0, 0, 10 * oSQ, 20 * oSQ);
 			}
-
-			draw2DArray(classement[j * maxXBoard + i].board, oSQ);
-			text(classement[j * maxXBoard + i].pseudo, oSQ, 2 * oSQ);
+			else break;
 			translate(oWidthBoard, 0);
 		}
 		translate(- maxXBoard * oWidthBoard, (20 / numberOfRows) * SQ);
 	}
 	pop();
 
-	/* Draw the grid */
-	stroke("white");
-	strokeWeight(3);
-	for(let i = 0; i < numberOfRows; i++) {
-		for(let j = 0; j < maxXBoard + 1; j++) {
-			line(j * 10 * oSQ, 0, j * 10 * oSQ, height);
-		}
-		line(0, (20 / numberOfRows) * SQ * i, maxXBoard * oWidthBoard, (20 / numberOfRows) * SQ * i);
-	}
 
 	pop();
 }
@@ -106,7 +105,7 @@ function dispOtherBoards() {
 function dispNext() {
 	push();
 	translate(10 * SQ, 0);
-	fill(COL[0]);
+	fill(91);
 	rect(xOff, yOff, 5 * SQ, 20 * SQ);
 
 	/* Draw the next tetromino */
@@ -337,6 +336,7 @@ function drawPiecePart(color, x, y, wCell) {
 		else if(color === "blue") img = blue;
 		else if(color === "orange") img = orange;
 		else if(color === COL[1]) img = grey;
+		else if(color === COL[2]) img = grey2;
 		image(img, x, y, wCell, wCell);
 	}
 }

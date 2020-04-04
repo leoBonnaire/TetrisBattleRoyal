@@ -11,13 +11,13 @@
 
 /* Array of every pieces */
 const PIECES = [
-    [Z, COL[2]],
-    [S, COL[3]],
-    [T, COL[4]],
-    [O, COL[5]],
-    [L, COL[6]],
-    [I, COL[7]],
-    [J, COL[8]]
+    [Z, COL[3]],
+    [S, COL[4]],
+    [T, COL[5]],
+    [O, COL[6]],
+    [L, COL[7]],
+    [I, COL[8]],
+    [J, COL[9]]
 ];
 
 /* Return a random Piece */
@@ -175,7 +175,7 @@ class Piece {
 
 			let isRowFull = true;
 
-			/* return true if the row is full */
+			/* Return true if the row is full */
 			for(let c = 0; c < COLL; c++){
 				isRowFull = isRowFull && (board[r][c] != 0);
 			}
@@ -185,7 +185,7 @@ class Piece {
 				for(let y = r; y > 1; y--){
 					for(let c = 0; c < COLL; c++){
 						/* Make every row going downward */
-						board[y][c] = board[y-1][c];
+						board[y][c] = board[y - 1][c];
 					}
 				}
 
@@ -197,6 +197,7 @@ class Piece {
 				addScore += 10;
 			}
 		}
+
     /* Send the infos to the server when a piece was locked */
     if(!gameOver) {
       if(!offline && !spectate) socket.emit('score', score, board);
@@ -204,4 +205,24 @@ class Piece {
       draw2DArray(board, SQ);
     }
 	}
+}
+
+function addRow() {
+  for(let i = 0; i < ROW - 1; i++) {
+    for(let j = 0; j < COLL; j++) {
+      /* Make every rows going upward */
+      board[i][j] = board[i + 1][j];
+    }
+  }
+
+  let voidIndex = randInt(COLL);
+
+  /* Create a new row at the bottom */
+  for(let i = 0; i < COLL; i++) {
+    if(i != voidIndex) board[ROW - 1][i] = 2;
+    else board[ROW - 1][i] = 0;
+  }
+
+  justAdd = true;
+  draw2DArray(board, SQ);
 }

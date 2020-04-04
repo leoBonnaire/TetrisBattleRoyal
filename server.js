@@ -62,6 +62,8 @@ io.on('connection', function (socket) {
 
       if(typeof(rooms[socket.room]) !== 'undefined') {
 
+        socket.score = 0;
+
         let startG = true;
         for(let i = 0; i < rooms[socket.room].length; i++) {
           if(rooms[socket.room][i].id === socket.id) { // Find the player
@@ -145,6 +147,23 @@ io.on('connection', function (socket) {
               }
           }
 
+          /* If one oo more row was completed */
+          if(score - socket.score !== 0 && global[socket.room].length > 1) {
+            let numberofRowsToSend = (Math.floor((score - socket.score) / 10)) % 6; // Calculate the number of rows to send
+            console.log(socket.pseudo + " send " + numberofRowsToSend + " row(s).");
+            for(let i = 0; i < numberofRowsToSend; i++) {
+              let randPlayerIndex = randInt(global[socket.room].length - 1); // Pick a random player
+              if(randPlayerIndex == indexplayer) { // If it picked itself
+                if(typeof(global[socket.room][indexplayer + 1] !== 'undefined')) // Check if the personn above exist
+                  randPlayerIndex++; // Pick that player
+                else randPlayerIndex--; // Else, pick the player below
+              }
+              let playerId = global[socket.room][randPlayerIndex].id; // ID of the player receiving the row
+              socket.in(socket.room).emit('addRow', playerId); // Send him the row
+              console.log(global[socket.room][randPlayerIndex].pseudo + " got a additional row from " + socket.pseudo);
+            }
+          }
+
           /* Update the global state with the infos sent by the user */
           socket.score = score;
           global[socket.room][indexplayer].score = socket.score;
@@ -208,7 +227,7 @@ io.on('connection', function (socket) {
             "\nScore : " + socket.score
           );
           console.log(global);
-          socket.emit('message', 'There was a problem, please refresh the game.');
+          // socket.emit('message', 'There was a problem, please refresh the game.');
         }
       });
 
@@ -271,7 +290,7 @@ io.on('connection', function (socket) {
             "\nScore : " + socket.score
           );
           console.log(global);
-          socket.emit('message', 'There was a problem, please refresh the game.');
+          // socket.emit('message', 'There was a problem, please refresh the game.');
         }
     });
 
@@ -345,4 +364,9 @@ function orderAllTimeGlobal() {
       for (let j = 0; j < allTimeglobal.length; j++)
           if (allTimeglobal[j].score < allTimeglobal[i].score)
               [allTimeglobal[i], allTimeglobal[j]] = [allTimeglobal[j], allTimeglobal[i]];
+}
+
+/* Output a random int */
+function randInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }

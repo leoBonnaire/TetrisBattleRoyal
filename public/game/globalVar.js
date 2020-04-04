@@ -35,13 +35,17 @@ let gameStarted; // Has the started
 
 let pseudo;
 
-let justLocked;
+/* Usefull for drawing the preview */
+let justLocked; // Was a piece just locked ?
+let justAdd; // Was a row just added ?
 
 let offline;
 
 /* Images */
-let cyan, blue, green, orange, purple, red, yellow, grey;
+let cyan, blue, green, orange, purple, red, yellow, grey, grey2;
 let logo;
+let ingameBg;
+let bgPerPlayer;
 
 let allRooms;
 
@@ -54,9 +58,9 @@ let timeBefore;
 
 /* Server stuffs */
 
-// let socket = io('localhost:3000');
+let socket = io('localhost:3000');
 // let socket = io('192.168.1.88:3000');
-let socket = io('hcl0ud.ddns.net:3000');
+// let socket = io('hcl0ud.ddns.net:3000');
 let id;
 let roomPlayersArray = [];
 let allTimeR; // All times ranking

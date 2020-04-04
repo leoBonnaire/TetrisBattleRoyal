@@ -14,8 +14,12 @@ function preload() {
 	red = loadImage('assets/blocks/red.png');
 	yellow = loadImage('assets/blocks/yellow.png');
   grey = loadImage('assets/blocks/grey.png');
+  grey2 = loadImage('assets/blocks/grey2.png');
 
   logo = loadImage('assets/buttons/banner.png');
+
+  ingameBg = loadImage('assets/background/ingameBg.png');
+  bgPerPlayer = loadImage('assets/background/ingameBgPerPlayer.png');
 }
 
 function setup() {
@@ -61,7 +65,6 @@ function roomHandler() {
 	pseudo = document.getElementById('pseudo').value;
 	let room = document.getElementById('roomChoice').value;
 
-	// TODO : list of forbidden pseudo
 	if(pseudo == " " || pseudo == null) pseudo = "Plouf";
 
 	socket.emit('joinRoom', pseudo, room); // Send the pseudo of the user
@@ -75,15 +78,11 @@ function startGame() {
 
 		if(offline) pseudo = "You";
 
-		if(onMobile) {
-			// Actions if the user is on mobile
-		} else {
-			// Actions if the user is not on mobile
-		}
-
 		gameStarted = true;
 
 		refreshDisplay(true);
+
+    document.getElementsByTagName("BODY")[0].style.overflow = "hidden";
 	}
 }
 
@@ -118,8 +117,6 @@ function draw() {
 			if(addScore != 0) {
 				if(addScore >= 40) addScore = 100;
 				score += addScore;
-
-        console.log(spectate);
 
 				/* Send the infos to the server */
 		    if(!offline && !spectate) socket.emit('score', score, board);
@@ -164,7 +161,7 @@ function mouseReleased() {
         }
     }
   }
-  else if((new Date()).getTime() - timeBefore > 100) {
+  else if((new Date()).getTime() - timeBefore > 50) {
     rotateP();
     timeBefore = (new Date()).getTime();
   }
@@ -222,4 +219,9 @@ function windowResized() {
 		refreshDisplay(true);
 		if(gameOver) dispDeath();
 	}
+}
+
+/* Output a random int */
+function randInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }

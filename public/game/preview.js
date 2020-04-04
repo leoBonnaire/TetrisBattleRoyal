@@ -6,8 +6,9 @@
 
 function updatePreview() {
 	/* Do not hide the old preview if we just locked */
-	if(!justLocked)	preview.show(COL[0]);
-	else justLocked = false;
+	if(!justLocked && !justAdd)	preview.show(COL[0]);
+	else if(justLocked) justLocked = false;
+	else if (justAdd) justAdd = false;
 	preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y);
 	while(!preview.collision(0,1,preview.activeTetromino)) {
 		preview.y++;

@@ -118,3 +118,11 @@ socket.on("death", function(isALegend) {
 socket.on("stopSpectate", function() {
 	window.location.reload();
 });
+
+socket.on('addRow', function(playerId) {
+	console.log(playerId, id);
+	if(playerId == id) {
+		addRow();
+		socket.emit('score', score, board);
+	}
+});
