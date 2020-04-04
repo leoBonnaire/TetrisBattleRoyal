@@ -1,20 +1,7 @@
-
-/* Define the tetromino's color */
-const COL = [
-	"#4d4d4d", // Default color
-	"#515151", // Preview color
-	"#737373", // Added Row colors
-	/* Piece colors : */
-	"red",
-	"green",
-	"yellow",
-	"blue",
-	"purple",
-	"cyan",
-	"orange",
-];
-
-/* Refresh the display */
+/* Refresh the display,
+ * full = true is for a full refresh.
+ * Else, it's just the board that is refreshed
+ */
 function refreshDisplay(full = false) {
 
 	if(full) {
@@ -22,7 +9,7 @@ function refreshDisplay(full = false) {
 
 		if(onMobile) {
 			SQ = width / 15;
-			image(logo, 0, 20 * SQ, width, height - 20 * SQ);
+			image(ingameBg, 0, 20 * SQ, ingameBg.width / 2, ingameBg.height / 2);
 		}
 		else {
 			SQ = height / 20;
@@ -41,9 +28,10 @@ function refreshDisplay(full = false) {
 	draw2DArray(board, SQ);
 }
 
-/* Display the next piece that is about to be launched and the score*/
+/* Display all the infos */
 function displayInfos() {
 
+	/* Adapt the textSize for mobile users */
 	if(onMobile) textSize(25);
 	else textSize(15);
 
@@ -52,9 +40,9 @@ function displayInfos() {
 	push();
 	translate(10 * SQ, 5 * SQ);
 
-	dispPlayerInfos();
+	dispPlayerInfos(); // Display the player's infos
 	if(!offline) {
-		dispRanking();
+		dispRanking(); // Display the ranking
 	}
 
 	pop();
@@ -140,7 +128,7 @@ function dispRanking() {
 	push();
 
 	fill("white");
-	for (let i = 0 ; i < classement.length ; i++) {
+	for(let i = 0 ; i < classement.length ; i++) {
 		if(i > 9) break; // Display only the 10 first player
 
 		/* Display the rank and the pseudo */
@@ -150,6 +138,7 @@ function dispRanking() {
 	pop();
 }
 
+/* Display the pseudo and score of the player */
 function dispPlayerInfos() {
 
 	push();
@@ -170,7 +159,7 @@ function dispPlayerInfos() {
 
 }
 
-
+/* Display the leaderboard */
 function dispAllTimeRanking() {
 	let listItem;
 
@@ -230,6 +219,7 @@ function dispAllTimeRanking() {
   listContainer.appendChild(listElement);
 }
 
+/* Display the rooms */
 function displayPlayingRooms() {
 	let listItem;
 
@@ -248,7 +238,7 @@ function displayPlayingRooms() {
 	// Create the title : Leaderboard
 	titelContainer = document.createElement("tr");
 	titel = document.createElement('th');
-	titel.colSpan = "4";
+	titel.colSpan = "5";
 	titel.innerHTML = "Active rooms";
 	titelContainer.appendChild(titel);
 	listElement.appendChild(titelContainer);
@@ -259,15 +249,18 @@ function displayPlayingRooms() {
 	subListItem1 = document.createElement('th');
 	subListItem2 = document.createElement('th');
 	subListItem3 = document.createElement('th');
+	subListItem4 = document.createElement('th');
 
 	subListItem1.innerHTML = "Room";
-	subListItem2.innerHTML = "State";
-	subListItem3.innerHTML = "Players";
+	subListItem2.innerHTML = "Mode";
+	subListItem3.innerHTML = "State";
+	subListItem4.innerHTML = "Players";
 
 	listItem.appendChild(subListItem0);
 	listItem.appendChild(subListItem1);
 	listItem.appendChild(subListItem2);
 	listItem.appendChild(subListItem3);
+	listItem.appendChild(subListItem4);
 
 	// Add listItem to the listElement
 	listElement.appendChild(listItem);
@@ -279,7 +272,7 @@ function displayPlayingRooms() {
 		subListItem0 = document.createElement('div');
 		sub1subListItem0 = document.createElement('button');
 		sub1subListItem0.setAttribute("onclick",
-			"document.getElementById('roomChoice').value = \""+allRooms[i].name+"\""
+			"document.getElementById('roomChoice').value = \""+allRooms[i].name+"\"; changeMode(\""+allRooms[i].mode+"\");"
 		);
 		sub1subListItem0.innerHTML = "Join";
 		sub2subListItem0 = document.createElement('button');
@@ -294,23 +287,30 @@ function displayPlayingRooms() {
 		subListItem1 = document.createElement('td');
 		subListItem2 = document.createElement('td');
 		subListItem3 = document.createElement('td');
+		subListItem4 = document.createElement('td');
 
 		subListItem1.innerHTML = allRooms[i].name;
-		subListItem2.innerHTML = allRooms[i].state.toUpperCase();
+
+		if(allRooms[i].mode == 'basic') subListItem2.innerHTML = "Basic";
+		if(allRooms[i].mode == 'chill') subListItem2.innerHTML = "Netflix 'nd chill'";
+		if(allRooms[i].mode == 'boom') subListItem2.innerHTML = "Boom !";
+
+		subListItem3.innerHTML = allRooms[i].state.toUpperCase();
 
 		if(allRooms[i].players.length === 1)
-			subListItem3.innerHTML = allRooms[i].players[0];
+			subListItem4.innerHTML = allRooms[i].players[0];
 		else if(allRooms[i].players.length === 2)
-			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1];
+			subListItem4.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1];
 		else if(allRooms[i].players.length === 3)
-			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2];
+			subListItem4.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2];
 		else
-			subListItem3.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2] + " ... (" + allRooms[i].players.length + ")";
+			subListItem4.innerHTML = allRooms[i].players[0] + ", " + allRooms[i].players[1] + ", " + allRooms[i].players[2] + " ... (" + allRooms[i].players.length + ")";
 
 		listItem.appendChild(subListItem0);
 		listItem.appendChild(subListItem1);
 		listItem.appendChild(subListItem2);
 		listItem.appendChild(subListItem3);
+		listItem.appendChild(subListItem4);
 
     // Add listItem to the listElement
     listElement.appendChild(listItem);
@@ -321,22 +321,23 @@ function displayPlayingRooms() {
   listContainer.appendChild(listElement);
 }
 
+/* Draw a tretomino square */
 function drawPiecePart(color, x, y, wCell) {
-	if(color === COL[0]) {
-		fill(color);
+	if(color === 0) {
+		fill("#4d4d4d");
 		rect(x, y, wCell, wCell);
 	}
 	else {
 		let img;
-		if(color === "red") img = red;
-		else if(color === "green") img = green;
-		else if(color === "yellow") img = yellow;
-		else if(color === "cyan") img = cyan;
-		else if(color === "purple") img = purple;
-		else if(color === "blue") img = blue;
-		else if(color === "orange") img = orange;
-		else if(color === COL[1]) img = grey;
-		else if(color === COL[2]) img = grey2;
+		if(color === 1) img = grey;
+		else if(color === 2) img = grey2;
+		else if(color === 3) img = red;
+		else if(color === 4) img = green;
+		else if(color === 5) img = yellow;
+		else if(color === 6) img = cyan;
+		else if(color === 7) img = purple;
+		else if(color === 8) img = blue;
+		else if(color === 9) img = orange;
 		image(img, x, y, wCell, wCell);
 	}
 }

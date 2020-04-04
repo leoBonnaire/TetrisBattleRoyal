@@ -88,7 +88,6 @@ socket.on("rooms4u", function(roomsR) {
 	if(!gameOver && window.location.href.split("/")[3] === "br") displayPlayingRooms();
 });
 
-/* When we receive the global ranking */
 socket.on('classement', function(global) {
 	classement = global; // Update the global ranking
 
@@ -120,9 +119,9 @@ socket.on("stopSpectate", function() {
 });
 
 socket.on('addRow', function(playerId) {
-	console.log(playerId, id);
 	if(playerId == id) {
-		addRow();
+		if(mode != 'chill') addRow();
+		if(mode == 'boom') score -= 10;
 		socket.emit('score', score, board);
 	}
 });

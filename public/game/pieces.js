@@ -11,19 +11,19 @@
 
 /* Array of every pieces */
 const PIECES = [
-    [Z, COL[3]],
-    [S, COL[4]],
-    [T, COL[5]],
-    [O, COL[6]],
-    [L, COL[7]],
-    [I, COL[8]],
-    [J, COL[9]]
+    [Z, 3],
+    [S, 4],
+    [T, 5],
+    [O, 6],
+    [L, 7],
+    [I, 8],
+    [J, 9]
 ];
 
 /* Return a random Piece */
 function randomPiece(){
     let r = floor(random(PIECES.length));
-    return new Piece(PIECES[r][0],PIECES[r][1]);
+    return new Piece(PIECES[r][0], PIECES[r][1]);
 }
 
 class Piece {
@@ -112,7 +112,7 @@ class Piece {
 
 		if(!this.collision(kick,0,nextPattern)) { // If there's no collision, ok to move
 
-			this.show(COL[0]);
+			this.show(0);
 
 			this.x += kick; // Make the kick effective
 			this.tetrominoN = (this.tetrominoN + 1) % this.tetromino.length; // Change the form
@@ -122,9 +122,9 @@ class Piece {
 
 	moveDown() {
 		if(!this.collision(0,1,this.activeTetromino)){
-			this.show(COL[0]);
+			this.show(0);
 			this.y++;
-		} else { // Means there's a collision
+		} else if(!goingDown) { // Means there's a collision
 			/* Reset the playing piece */
 			this.lock();
 			p = nextP;
@@ -136,14 +136,14 @@ class Piece {
 
 	moveLeft() {
 		if(!this.collision(-1,0,this.activeTetromino)){
-			this.show(COL[0]);
+			this.show(0);
 			this.x--;
 		}
 	}
 
 	moveRight() {
 		if(!this.collision(1,0,this.activeTetromino)){
-			this.show(COL[0]);
+			this.show(0);
 			this.x++;
 		}
 	}
@@ -165,7 +165,7 @@ class Piece {
 				}
 
 				/* Put the piece in the board to lock it */
-				board[this.y+r][this.x+c] = colToInt(this.color);
+				board[this.y+r][this.x+c] = this.color;
 			}
 		}
 

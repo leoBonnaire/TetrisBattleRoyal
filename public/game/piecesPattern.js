@@ -1,11 +1,11 @@
 
-/* 
+/*
 
- * This file is where every tetrominos are referenced
- * Every tetrominos is made out of 4 differents forms
- * each one representated by an array of 0 and 1
+ * This file is where every tretominos are referenced
+ * Every tretomino is made out of 4 differents forms
+ * each one is representated by an array of 0 and 1
  * It changes form when rotating
- 
+
 */
 
 

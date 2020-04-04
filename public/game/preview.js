@@ -6,14 +6,14 @@
 
 function updatePreview() {
 	/* Do not hide the old preview if we just locked */
-	if(!justLocked && !justAdd)	preview.show(COL[0]);
+	if(!justLocked && !justAdd)	preview.show(0);
 	else if(justLocked) justLocked = false;
 	else if (justAdd) justAdd = false;
 	preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y);
 	while(!preview.collision(0,1,preview.activeTetromino)) {
 		preview.y++;
 	}
-	preview.show(COL[1]);
+	preview.show(1);
 }
 
 class Preview {

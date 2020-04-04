@@ -1,10 +1,14 @@
 /*
-function play(e) {
-	if(e.keyCode == 80) audio.play();
-	if(e.keyCode == 83) audio.pause();
-}
+
+   *
+   * Main script file
+   * Where the game take place ...
+   *
+
 */
 
+
+/* Load the images */
 function preload() {
   blue = loadImage('assets/blocks/blue.png');
 	cyan = loadImage('assets/blocks/cyan.png');
@@ -15,91 +19,48 @@ function preload() {
 	yellow = loadImage('assets/blocks/yellow.png');
   grey = loadImage('assets/blocks/grey.png');
   grey2 = loadImage('assets/blocks/grey2.png');
-
-  logo = loadImage('assets/buttons/banner.png');
-
-  ingameBg = loadImage('assets/background/ingameBg.png');
-  bgPerPlayer = loadImage('assets/background/ingameBgPerPlayer.png');
+  logo = loadImage('assets/banner.png');
+  ingameBg = loadImage('assets/background.png');
 }
 
+/* Setup the game */
 function setup() {
-
-	/* Initiate variables */
-	score = 0;
-	addScore = 0;
-	deltaT = 1000;
-
-	gameStarted = false;
-	gameOver = false;
-	justLocked = false;
-	offline = false;
-
-	xOff = 0;
-	yOff = 0;
-
-	/* Make board a 2D array full of COL[0] cells */
-	board = make2DArray(10, 20, 0);
-
-	p = randomPiece(); // Initiate firt piece
-	nextP = randomPiece(); // Initiate next piece
-	preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y); // Initiate preview
-
-	/* Initiate time */
-	lastTime = (new Date()).getTime();
+  initiateGVar(); // Initiate all the global var
 
 	/* Check if the user is on mobile */
  	onMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-	if(onMobile) {
-		// Actions if the user is on mobile
-
-	} else {
-		// Actions if the user is not on mobile
-
-	}
-
 }
 
 function roomHandler() {
 	// On demande le pseudo au visiteur...
 	pseudo = document.getElementById('pseudo').value;
-	let room = document.getElementById('roomChoice').value;
+	room = document.getElementById('roomChoice').value;
 
-	if(pseudo == " " || pseudo == null) pseudo = "Plouf";
-
-	socket.emit('joinRoom', pseudo, room); // Send the pseudo of the user
+	socket.emit('joinRoom', pseudo, room, mode); // Send the user in the room
 }
 
 function startGame() {
 	if(!gameStarted) {
-
+    gameStarted = true; // The game starts
+    if(offline) pseudo = "Score : ";
 		centerCanvas();
-		background(51);
-
-		if(offline) pseudo = "You";
-
-		gameStarted = true;
-
-		refreshDisplay(true);
-
-    document.getElementsByTagName("BODY")[0].style.overflow = "hidden";
+		refreshDisplay(true); // Full refresh
+    document.getElementsByTagName("BODY")[0].style.overflow = "hidden"; // Prevent scrolling
 	}
 }
 
 function endGame() {
   if(!spectate) {
     gameOver = true;
-
-    canvas.elt.style.display = "none";
-    document.getElementById("death").style.display = "block";
-
+    canvas.elt.style.display = "none"; // Hide the canvas
+    document.getElementById("death").style.display = "block"; // Show the death screen
     if(!offline) {
-      socket.emit('lost');
-      document.getElementById("brr").style.display = "none";
+      socket.emit('lost'); // Tell the server you died
+      document.getElementById("brr").style.display = "none"; // Hide the menu
     }
     else {
-      document.getElementById("homeMenu").style.display = "none";
-      document.getElementById("scoreS").innerHTML = "You scored " + score + " points.";
+      document.getElementById("homeMenu").style.display = "none"; // Hide the menu
+      document.getElementById("scoreS").innerHTML = "You scored " + score + " points."; // Show the score
     }
   }
 }
@@ -108,33 +69,37 @@ function draw() {
 
 	if(gameStarted && !gameOver) {
 
-		time = (new Date()).getTime();
+		time = (new Date()).getTime(); // Update the time
 
 		if(time - lastTime >= deltaT) {
 
 			// This is executed every delta time
 
 			if(addScore != 0) {
-				if(addScore >= 40) addScore = 100;
-				score += addScore;
+				if(addScore >= 40) addScore = 100; // Tretis was made
+				score += addScore; // Update the score
+				addScore = 0; // Reset that
 
-				/* Send the infos to the server */
-		    if(!offline && !spectate) socket.emit('score', score, board);
-				addScore = 0;
+        if(!offline && !spectate) socket.emit('score', score, board);
 			}
 
-      deltaT -= 1;
-      deltaT = constrain(deltaT, 250, 1000);
+      if(mode == 'boom') {
+        deltaT -= 3; // Time is accelerating twice faster
+        deltaT = constrain(deltaT, 150, 1000); // delta time can go down to 150 ms
+      } else {
+        deltaT -= 1.5;
+        deltaT = constrain(deltaT, 250, 1000); // delta time can go down to 250 ms
+      }
 
 			p.moveDown(); // Just drop the piece
 
-			lastTime = time;
+			lastTime = time; // Update time
 		}
 
-		if(offline) displayInfos();
+    displayInfos();
 
 		updatePreview();
-		p.show(p.color);
+		p.show(p.color); // Show the piece
 	}
 }
 
@@ -145,25 +110,42 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  let deltaX = mouseX - xBefore;
-  let deltaY = mouseY - yBefore;
+  if(gameStarted) {
+    let deltaX = mouseX - xBefore;
+    let deltaY = mouseY - yBefore;
 
-  let moveSize = sqrt(deltaX * deltaX + deltaY * deltaY);
+    let moveSize = sqrt(deltaX * deltaX + deltaY * deltaY);
 
-  if(moveSize > 40) {
-    if(abs(deltaX) > abs(deltaY)) {
-      if(deltaX > 40) moveR();
-      else if (deltaX < -40) moveL();
-    }
-    else {
-        if(deltaY > 40) {
-           down(); down();
+    if(moveSize > 40) {
+      if(abs(deltaX) > abs(deltaY)) {
+        if(deltaX > 40) {
+          let movementsNumber = floor(deltaX / SQ) / 2;
+          for(let i = 0; i < movementsNumber; i++) {
+            moveR();
+          }
         }
+        else if (deltaX < -40) {
+          let movementsNumber = floor(- deltaX / SQ) / 2;
+          for(let i = 0; i < movementsNumber; i++) {
+            moveL();
+          }
+        }
+      }
+      else {
+          if(deltaY > 40) {
+             let movementsNumber = floor(deltaY / SQ);
+             goingDown = true;
+             for(let i = 0; i < movementsNumber; i++) {
+               down();
+             }
+             goingDown = false;
+          }
+      }
     }
-  }
-  else if((new Date()).getTime() - timeBefore > 50) {
-    rotateP();
-    timeBefore = (new Date()).getTime();
+    else if((new Date()).getTime() - timeBefore > 50) {
+      rotateP();
+      timeBefore = (new Date()).getTime();
+    }
   }
 }
 
@@ -214,11 +196,19 @@ function centerCanvas() {
 }
 
 function windowResized() {
-	if(gameStarted) {
+	if(gameStarted && !gameOver) {
 		centerCanvas();
 		refreshDisplay(true);
-		if(gameOver) dispDeath();
 	}
+}
+
+function changeMode(modeToSet) {
+  mode = modeToSet;
+  if(document.getElementById('modeP') !== null) {
+    if(mode == 'chill') document.getElementById('modeP').innerHTML = "Gamemode : Netflix 'nd chill  ";
+    else if(mode == 'basic') document.getElementById('modeP').innerHTML = "Gamemode : Basic ";
+    else if(mode == 'boom') document.getElementById('modeP').innerHTML = "Gamemode : Boom !";
+  }
 }
 
 /* Output a random int */

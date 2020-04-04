@@ -1,66 +1,100 @@
-let board;
+/*
 
-let classement; // Global ranking
-let rank = 1; // Players's rank
+   *
+   * This file is the bank of the global variables and their initialisation
+   *
 
-let time, lastTime; // Keep tracks of time
-const ROW = 20;
-const COLL = 10;
-
-let SQ; // Size of a square
-
-let p; // Actual piece
-let nextP; // next Piece
-
-let preview;
-
-let score; // Actual score
-let addScore; // Score to add
-let gameOver; // Is the game over ?
-
-let deltaT; // Time between each piece fall in ms
-
-let buttons = []; // Array of the buttons
-
-let onMobile; // True is the user is on mobile
-
-// let audio = new Audio('tetrisTheme.mp3');
-
-let buttonWidth; // Size a single button
-let buttonHeight; // Defined in the refreshDisplay() function
-
-let xOff, yOff; // Translating offsets for the whole main field drawing
-
-let gameStarted; // Has the started
-
-let pseudo;
-
-/* Usefull for drawing the preview */
-let justLocked; // Was a piece just locked ?
-let justAdd; // Was a row just added ?
-
-let offline;
-
-/* Images */
-let cyan, blue, green, orange, purple, red, yellow, grey, grey2;
-let logo;
-let ingameBg;
-let bgPerPlayer;
-
-let allRooms;
-
-let spectate = false;
-
-/* Mobile var slide */
-let xBefore;
-let yBefore;
-let timeBefore;
-
-/* Server stuffs */
+*/
 
 let socket = io('localhost:3000');
 // let socket = io('192.168.1.88:3000');
 // let socket = io('hcl0ud.ddns.net:3000');
-let id;
-let roomPlayersArray = [];
-let allTimeR; // All times ranking
+
+ function initiateGVar() {
+
+   rank = 1;
+
+   score = 0;
+   addScore = 0;
+   deltaT = 1000;
+
+   gameStarted = false;
+   gameOver = false;
+   justLocked = false;
+
+   offline = false;
+
+   xOff = 0;
+   yOff = 0;
+
+   spectate = false;
+   changeMode("basic");
+   roomPlayersArray = [];
+
+   board = make2DArray(COLL, ROW, 0);
+
+   p = randomPiece(); // Initiate first piece
+   nextP = randomPiece(); // Initiate next piece
+ 	 preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y); // Initiate preview
+
+   lastTime = (new Date()).getTime(); // time
+ }
+
+/* Player */
+
+let pseudo; // Player pseudo
+let board; // 2D array : player's board
+let rank = 1; // Players's rank
+let score; // Actual score
+let addScore; // Score to add (use to check the tretis)
+
+/* Time */
+
+let time, lastTime; // Keep tracks of time
+let deltaT; // Time between each piece fall in ms
+
+/* Board size */
+
+const ROW = 20; // Number of rows
+const COLL = 10; // Number of collums
+let SQ; // Size of one square
+let xOff, yOff; // Translating offsets for the whole main field drawing (not in use)
+
+/* Pieces */
+
+let p; // Actual piece
+let nextP; // next Piece
+let preview; // Preview Piece
+
+/* State */
+
+let mode; // Game mode
+let offline; // Is the player offline ?
+let gameOver; // Is the game over ?
+let onMobile; // Is the player on mobile ?
+let spectate; // Is the player a spectator ?
+let gameStarted; // Has the started ?
+let goingDown; // Is the piece moving down ? (for mobile)
+/* Usefull for the preview drawing : */
+let justLocked; // Was a piece just locked ?
+let justAdd; // Was a row just added ?
+
+/* Images */
+
+let cyan, blue, green, orange, purple, red, yellow, grey, grey2; // Blocks
+let logo; // Main menu logo
+let ingameBg; // Background in game
+
+/* Mobile var slide */
+
+let xBefore; // x-pos of the user click before he released it
+let yBefore; // y-pos of the user click before he released it
+let timeBefore; // time when the user clicked
+
+/* Server */
+
+let id; // Player's ID
+let allTimeR; // Leaderboard
+let allRooms; // Playing rooms (on meunu)
+let classement; // Global ranking (in game)
+let room; // Player's room

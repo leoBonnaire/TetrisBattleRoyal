@@ -19,8 +19,8 @@
     <script src="./game/piecesPattern.js"></script>
     <script src="./game/pieces.js"></script>
     <script src="./game/preview.js"></script>
-    <script src="./game/handleServer.js"></script>
     <script src="./game/sketch.js"></script>
+    <script src="./game/handleServer.js"></script>
 
     <script>
 
@@ -36,31 +36,42 @@
 
     </script>
 
-
   </head>
 
   <body>
     <br><br>
-    <a href="../"><img src="/assets/buttons/banner.png" style="max-width: 800px;" href=""></img></a>
+    <a href="../"><img src="/assets/banner.png" style="max-width: 800px;" href=""></img></a>
     <br><hr><br>
     <% if ( page === "home") { %>
       <div id="homeMenu">
         <a href="/br">
-      <img class="menuButton" src="/assets/buttons/battle-royale.png"></img></a><br><br>
-      <a href="javascript:onclick=offline = true; startGame();">
-      <img class="menuButton" src="/assets/buttons/play-solo.png"></img></a><br><br>
-      <img class="menuButton" src="/assets/buttons/exit.png"></img><br><br>
-    </div>
-      <% } %>
+        <img class="menuButton" src="/assets/buttons/battle-royale.png"></img></a><br><br>
+        <a href="javascript:onclick=offline = true; startGame();">
+        <img class="menuButton" src="/assets/buttons/play-solo.png"></img></a><br><br>
+        <img class="menuButton" src="/assets/buttons/exit.png"></img><br><br>
+      </div>
+    <% } %>
     <% if ( page === "br") { %>
 <div id="brr">
   <div id="homeform">
+
+    <div class="dropdown">
+      <button onclick="toggleButton()" class="dropbtn">Change Mode</button>
+      <div id="myDropdown" class="dropdown-content">
+        <a onclick="changeMode('basic')">Basic</a>
+        <a onclick="changeMode('chill')">Netflix 'nd chill</a>
+        <a onclick="changeMode('boom')">Boom !</a>
+      </div>
+    </div>
+
+    <p id="modeP"><p>
+
     <form onsubmit="return enteredRoom()">
         <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
         <input id="roomChoice" class="pseudo" type="text" placeholder="Room" pattern=".{1,4}" required title="1-4 characters" name="Room">
-
         <button class="button" type="submit">Join</button><br><br>
     </form>
+
   </div>
   <div id='room' style="display: none;">
     <form onsubmit="return imReady()">
@@ -77,6 +88,28 @@
         <a href="../"><img class="menuButton" src="/assets/buttons/menuButton.png"></img></a>
       </div>
 
+
+<script type="text/javascript">
+  /* When the user clicks on the button,
+  toggle between hiding and showing the dropdown content */
+  function toggleButton() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+</script>
 
   </body>
 </html>
