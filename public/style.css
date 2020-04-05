@@ -1,3 +1,5 @@
+@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
 /* Main styles */
 
 html, body {margin: 0; height: 100%}
@@ -10,6 +12,15 @@ body {
 	text-align: center;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+canvas {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	z-index:-1;
 }
 
 hr {
@@ -25,12 +36,14 @@ td, th {
 
 /* Leaderboard */
 #div2 {
-	margin-left: 30%;
+	position: fixed;
+	left: 20px; top: 20px;
 }
 
 /* Active rooms */
 #div3 {
-	margin-left: 45%;
+	position: fixed;
+	right: 30px; bottom: 40%;
 }
 
 .menuButton {
@@ -48,15 +61,16 @@ td, th {
 .button {
   background-color: #990099; /* Purple */
   border: none;
-  border-radius: 300px;
+  border-radius: 15px;
   color: white;
   padding: 15px 0px;
-  width: 10%;
+  width: 20%;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 1.2em;
   cursor: pointer;
+	zoom: 1.5
 }
 
 .button:hover {
@@ -65,13 +79,14 @@ td, th {
 
 /* Pseudo input bar */
 .pseudo {
-	width: 20%;
+	width: 40%;
 	padding: 12px 20px;
   margin: 8px 0;
 	display: inline-block;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+	zoom: 1.5;
 }
 
 
@@ -84,6 +99,7 @@ td, th {
 	font-size: 16px;
 	border: none;
 	cursor: pointer;
+	zoom: 1.5;
 }
 
 .dropbtn:hover, .dropbtn:focus {
@@ -115,3 +131,87 @@ td, th {
 .dropdown a:hover {background-color: #ddd;}
 
 .show {display: block;}
+
+.close {
+  color: #737373;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.my-notify-info, .my-notify-success, .my-notify-warning, .my-notify-error {
+    padding:10px;
+		position: fixed;
+    bottom: 30px;
+		right: 15px;
+		width: 40%;
+		border-radius: 5px;
+
+		-webkit-animation-name: animatebot;
+		-webkit-animation-duration: 0.15s;
+		animation-name: animatebot;
+		animation-duration: 0.15s;
+}
+
+.my-notify-info:before, .my-notify-success:before, .my-notify-warning:before, .my-notify-error:before {
+    font-family:FontAwesome;
+    font-style:normal;
+    font-weight:400;
+    speak:none;
+    display:inline-block;
+    text-decoration:inherit;
+    width:1em;
+    margin-right:.2em;
+    text-align:center;
+    font-variant:normal;
+    text-transform:none;
+    line-height:1em;
+    margin-left:.2em;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale
+}
+.my-notify-info:before {
+    content:"\f05a";
+}
+.my-notify-success:before {
+    content:'\f00c';
+}
+.my-notify-warning:before {
+    content:'\f071';
+}
+.my-notify-error:before {
+    content:'\f057';
+}
+.my-notify-info {
+    color: #00529B;
+    background-color: #BDE5F8;
+}
+.my-notify-success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.my-notify-warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.my-notify-error {
+    color: #D8000C;
+    background-color: #FFD2D2;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatebot {
+  from {bottom:-300px; opacity:0}
+  to {bottom:0; opacity:1}
+}
+
+@keyframes animatebot {
+  from {bottom:-300px; opacity:0}
+  to {bottom:0; opacity:1}
+}

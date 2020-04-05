@@ -26,9 +26,6 @@ function preload() {
 /* Setup the game */
 function setup() {
   initiateGVar(); // Initiate all the global var
-
-	/* Check if the user is on mobile */
- 	onMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function roomHandler() {
@@ -42,17 +39,21 @@ function roomHandler() {
 function startGame() {
 	if(!gameStarted) {
     gameStarted = true; // The game starts
-    if(offline) pseudo = "Score : ";
+    if(mode === 'chill') deltaT = 800;
+    if(offline) pseudo = "Score ";
 		centerCanvas();
 		refreshDisplay(true); // Full refresh
     document.getElementsByTagName("BODY")[0].style.overflow = "hidden"; // Prevent scrolling
+    document.getElementById('wholePage').style.display = 'none'; // Hide the page
 	}
 }
 
 function endGame() {
-  if(!spectate) {
+  if(!spectate && gameStarted && !gameOver) {
     gameOver = true;
+    document.getElementById('message').style.display = "none"; // Hide the last message
     canvas.elt.style.display = "none"; // Hide the canvas
+    document.getElementById('wholePage').style.display = 'block'; // Show the page
     document.getElementById("death").style.display = "block"; // Show the death screen
     if(!offline) {
       socket.emit('lost'); // Tell the server you died
@@ -86,7 +87,7 @@ function draw() {
       if(mode == 'boom') {
         deltaT -= 3; // Time is accelerating twice faster
         deltaT = constrain(deltaT, 150, 1000); // delta time can go down to 150 ms
-      } else {
+      } else if (mode !== 'chill') {
         deltaT -= 1.5;
         deltaT = constrain(deltaT, 250, 1000); // delta time can go down to 250 ms
       }
@@ -214,4 +215,18 @@ function changeMode(modeToSet) {
 /* Output a random int */
 function randInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+/* Send a message to the player */
+function printMessage(message, type) {
+  document.getElementById('message').style.display = "none"; // Hide the last message
+  if(type === 'info') document.getElementById('message').setAttribute('class', 'my-notify-info');
+  else if(type === 'success') document.getElementById('message').setAttribute('class', 'my-notify-success');
+  else if(type === 'error') document.getElementById('message').setAttribute('class', 'my-notify-error');
+  else if(type === 'warning') document.getElementById('message').setAttribute('class', 'my-notify-warning');
+
+  document.getElementById('messageText').innerHTML = message;
+  setTimeout(function() {
+    document.getElementById('message').style.display = "block";
+  }, 50);
 }

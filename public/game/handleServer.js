@@ -9,8 +9,8 @@
 socket.emit('NeedAllTimeRanking'); // Ask for the all times ranking
 
 // On affiche une boîte de dialogue quand le serveur nous envoie un "message"
-socket.on('message', function(message) {
-	alert(message);
+socket.on('message', function(message, type) {
+	printMessage(message, type);
 })
 
 socket.on('yourId', function(idReceived) {
@@ -21,13 +21,13 @@ socket.on('startNow', function() {
 	startGame();
 });
 
-socket.on('okToPlay', function(isOk) {
+socket.on('okToPlay', function(isOk, text) {
 	if(isOk) {
 		document.getElementById("homeform").style.display = "none";
 		document.getElementById("room").style.display =  "block";
 	}
 	else {
-		alert("The room is already playing!");
+		printMessage(text, 'warning');
 	}
 });
 
@@ -74,7 +74,7 @@ socket.on('roomPlayers', function(roomPlayers, room) {
 socket.on('died', function(idR) {
 	if(idR === id && !spectate) {
 		alert("Your AFKness killed you");
-		endGame();
+		if(gameStarted && !gameOver) endGame();
 	}
 });
 
@@ -120,8 +120,8 @@ socket.on("stopSpectate", function() {
 
 socket.on('addRow', function(playerId) {
 	if(playerId == id) {
-		if(mode != 'chill') addRow();
-		if(mode == 'boom') score -= 10;
+		if(mode !== 'chill') addRow();
+		if(mode == 'boom') score -= 5;
 		socket.emit('score', score, board);
 	}
 });

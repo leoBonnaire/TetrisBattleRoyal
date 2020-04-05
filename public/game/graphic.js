@@ -167,6 +167,10 @@ function dispAllTimeRanking() {
   if (document.getElementById("div2"))
 		document.getElementById("div2").parentNode.removeChild(document.getElementById("div2"));
 
+		if(onMobile) {
+        document.getElementById('div2').style.zoom = 1.2;
+    }
+
   // Make a container element for the list
   let listContainer = document.createElement('div');
   listContainer.setAttribute("id", "div2");
@@ -226,6 +230,10 @@ function displayPlayingRooms() {
 	/* If it exist, destroy itself */
   if (document.getElementById("div3"))
 		document.getElementById("div3").parentNode.removeChild(document.getElementById("div3"));
+
+		if(onMobile) {
+				document.getElementById('div3').style.zoom = 1.8;
+		}
 
   // Make a container element for the list
   let listContainer = document.createElement('div');

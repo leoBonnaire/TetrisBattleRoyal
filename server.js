@@ -24,7 +24,6 @@ app.get('/br/', function (req, res) {
 /* Handle a new connection */
 io.on('connection', function (socket) {
 
-    /* When a user connect to the server */
     socket.on('joinRoom', function(pseudo, room, mode) {
 
         if(rooms[room] == null) {
@@ -32,18 +31,23 @@ io.on('connection', function (socket) {
           rooms[room].state = "preparating";
           rooms[room].mode = mode;
           console.log(pseudo + " created the room " + room + " in mode " + mode);
+          socket.emit('message', 'Room ' + room + ' created with success.', 'success');
         }
 
-        if(rooms[room].state === "preparating" || rooms[room].mode === "chill") {
-
-          socket.emit('yourId', socket.id); // Send its ID to the player
-          socket.emit('okToPlay', true); // The player can enter the room
-
-          socket.join(room);
+        if(rooms[room].mode === 'chill') {
 
           socket.pseudo = pseudo;
           socket.room = room;
 
+          /* Create the room if it's the first player */
+          if(typeof(global[socket.room]) === 'undefined') {
+            rooms[room].state = "playing";
+            global[socket.room] = [];
+            global[socket.room].mode = rooms[socket.room].mode;
+          }
+
+          socket.join(room);
+          
           rooms[socket.room].push({
             id: socket.id,
             pseudo: socket.pseudo,
@@ -51,12 +55,58 @@ io.on('connection', function (socket) {
           });
 
           console.log(socket.pseudo + " joined room " + socket.room);
+          socket.in(socket.room).emit('message', socket.pseudo + ' joined', 'info');
 
-          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
-          socket.emit('roomPlayers', rooms[socket.room], socket.room);
+          socket.emit('classement', global[socket.room]);
+          socket.emit('startNow');
+
+          let i = rooms[socket.room].length - 1;
+          global[socket.room].push(new Player(
+            rooms[socket.room][i].id,
+            rooms[socket.room][i].pseudo,
+            0,
+            []
+          )); // Add the new player to the global state
+
+          lastEmits.push({
+            id: rooms[socket.room][i].id,
+            room: socket.room,
+            pseudo: rooms[socket.room][i].pseudo,
+            time: (new Date()).getTime()
+          }); // Initiate the last emit
         }
 
-        else socket.emit('okToPlay', false); // The room is occupied
+        else if(rooms[room].state === "preparating") {
+
+          if(mode !== rooms[room].mode) {
+            if(rooms[room].mode === 'chill') socket.emit('okToPlay', false, "You must set your mode to Netflix 'nd chill to join that room.");
+            else if(rooms[room].mode === 'boom') socket.emit('okToPlay', false, "You must set your mode to Boom ! to join that room.");
+            else if(rooms[room].mode === 'basic') socket.emit('okToPlay', false, "You must set your mode to Basic to join that room.");
+          }
+          else {
+            socket.emit('yourId', socket.id); // Send its ID to the player
+            socket.emit('okToPlay', true, ' '); // The player can enter the room
+
+            socket.join(room);
+
+            socket.pseudo = pseudo;
+            socket.room = room;
+
+            rooms[socket.room].push({
+              id: socket.id,
+              pseudo: socket.pseudo,
+              ready: false
+            });
+
+            console.log(socket.pseudo + " joined room " + socket.room);
+
+            socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
+            socket.in(socket.room).emit('message', socket.pseudo + " joined.", 'info')
+            socket.emit('roomPlayers', rooms[socket.room], socket.room);
+          }
+        }
+
+        else socket.emit('okToPlay', false, "This game is already in progress ! You can only join when the game is preparating or when it's in Netflix 'nd chill mode !"); // The room is occupied
     });
 
     socket.on('imReady', function() {
@@ -79,24 +129,19 @@ io.on('connection', function (socket) {
         socket.emit('roomPlayers', rooms[socket.room], socket.room);
         if(rooms[socket.room].mode != 'chill' || rooms[socket.room].state == 'preparating') {
           socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
-          console.log("Rooms updated for the players !");
         }
 
-        if(startG && (rooms[socket.room].mode != 'chill' || rooms[socket.room].state == 'preparating')) {
-
-          console.log("Everyone is ready !");
+        if(startG) {
 
           /* Initiate and send the ranking to everyone */
           global[socket.room] = [];
-          global[socket.room].mode = "chill";
+          global[socket.room].mode = rooms[socket.room].mode;
           socket.emit('classement', global[socket.room]);
           socket.in(socket.room).emit('classement', global[socket.room]);
-          console.log("Empty global sent !");
 
           /* Make everyone start the game */
           socket.emit('startNow');
           socket.in(socket.room).emit('startNow');
-          console.log("Start signal sent !");
 
           let lengthBefore = lastEmits.length;
           for(let i = 0; i < rooms[socket.room].length; i++) {
@@ -116,38 +161,17 @@ io.on('connection', function (socket) {
             }; // Initiate the last emit
           }
 
-          console.log("Everyone added to global and lastEmits !");
-
           rooms[socket.room].state = "playing"; // Update the room state
 
           console.log("Room " + socket.room + " is now playing.");
         }
-        else if(rooms[socket.room].mode === 'chill') {
-          socket.emit('classement', global[socket.room]);
-
-          let i = rooms[socket.room].length - 1;
-          global[socket.room].push(new Player(
-            rooms[socket.room][i].id,
-            rooms[socket.room][i].pseudo,
-            0,
-            []
-          )); // Add the new player to the global state
-          lastEmits.push({
-            id: rooms[socket.room][i].id,
-            room: socket.room,
-            pseudo: rooms[socket.room][i].pseudo,
-            time: (new Date()).getTime()
-          }); // Initiate the last emit
-
-          socket.emit('startNow');
-        }
       }
       else {
-        console.log("Room not recognized !" +
+        console.log("ERROR : Room not recognized !" +
           "\n Room : " + socket.room +
           "\n Player : " + socket.pseudo
         );
-        socket.emit('message', 'There was a problem, please refresh the game.');
+        socket.emit('message', 'There was a problem, please refresh the game by pressing CTRL + F5.', 'error');
       }
     });
 
@@ -171,23 +195,26 @@ io.on('connection', function (socket) {
           }
 
           /* If one oo more row was completed */
-          if(score - socket.score !== 0 && global[socket.room].length > 1 && global[socket.room].mode != 'chill') {
+          if(score - socket.score !== 0 && global[socket.room].length > 1 && global[socket.room].mode !== 'chill') {
             /* Calculate the number of rows to send */
             let numberofRowsToSend;
             if(global[socket.room].mode === 'boom')
               numberofRowsToSend = (Math.floor((score - socket.score) / 10) + 1) % 15;
             else numberofRowsToSend = (Math.floor((score - socket.score) / 10)) % 6;
-            console.log(socket.pseudo + " send " + numberofRowsToSend + " row(s).");
-            for(let i = 0; i < numberofRowsToSend; i++) {
-              let randPlayerIndex = randInt(global[socket.room].length - 1); // Pick a random player
-              if(randPlayerIndex == indexplayer) { // If it picked itself
-                if(typeof(global[socket.room][indexplayer + 1] !== 'undefined')) // Check if the personn above exist
-                  randPlayerIndex++; // Pick that player
-                else randPlayerIndex--; // Else, pick the player below
+            if(numberofRowsToSend !== 0) {
+              console.log(socket.pseudo + " send " + numberofRowsToSend + " row(s).");
+              socket.in(socket.room).emit('message', socket.pseudo + ' send ' + numberofRowsToSend + " row(s) !", 'info')
+              for(let i = 0; i < numberofRowsToSend; i++) {
+                let randPlayerIndex = randInt(global[socket.room].length - 1); // Pick a random player
+                if(randPlayerIndex == indexplayer) { // If it picked itself
+                  if(typeof(global[socket.room][indexplayer + 1] !== 'undefined')) // Check if the personn above exist
+                    randPlayerIndex++; // Pick that player
+                  else randPlayerIndex--; // Else, pick the player below
+                }
+                let playerId = global[socket.room][randPlayerIndex].id; // ID of the player receiving the row
+                socket.in(socket.room).emit('addRow', playerId); // Send him the row
+                console.log(global[socket.room][randPlayerIndex].pseudo + " got a additional row from " + socket.pseudo);
               }
-              let playerId = global[socket.room][randPlayerIndex].id; // ID of the player receiving the row
-              socket.in(socket.room).emit('addRow', playerId); // Send him the row
-              console.log(global[socket.room][randPlayerIndex].pseudo + " got a additional row from " + socket.pseudo);
             }
           }
 
@@ -209,7 +236,6 @@ io.on('connection', function (socket) {
           for(let i = 0; i < lastEmits.length; i++) {
             if(now - lastEmits[i].time > 60000) { // 1 min
 
-              console.log("A player is AFK.");
               let afkPlayer = lastEmits[i];
 
               let indexplayer; // Index of the player in the global state
@@ -232,15 +258,14 @@ io.on('connection', function (socket) {
                   " points."
                 );
 
+                socket.in(socket.room).emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
+
                 global[afkPlayer.room].splice(indexplayer, 1);
                 lastEmits.splice(i, 1);
-
-                console.log("There's now " + global[afkPlayer.room].length + " players in room " + socket.room);
 
                 if(global[afkPlayer.room].length < 1) {
                   delete rooms[afkPlayer.room];
                   delete global[afkPlayer.room];
-                  console.log("Room and global deleted.");
                   socket.in(afkPlayer.room).in("spectator").emit('stopSpectate');
                 }
                 break;
@@ -249,14 +274,14 @@ io.on('connection', function (socket) {
           }
         }
         else {
-          console.log("[SCORE] Player not recognized !" +
+          console.log("ERROR : [SCORE] Player not recognized !" +
             "\nRoom : " + socket.room +
             "\nPseudo : " + socket.pseudo +
             "\nID : " + socket.id +
             "\nScore : " + socket.score
           );
           console.log(global);
-          // socket.emit('message', 'There was a problem, please refresh the game.');
+          socket.emit('message', 'There was a problem, please refresh the game.', 'error');
         }
       });
 
@@ -265,6 +290,8 @@ io.on('connection', function (socket) {
           for(let i = 0; i < global[socket.room].length; i++) {
             if(global[socket.room][i].id === socket.id) {
                console.log(global[socket.room][i].pseudo + " lost with " + global[socket.room][i].score + " points.");
+
+               socket.in(socket.room).emit('message', global[socket.room][i].pseudo + " perished.", 'info')
 
                /* Delete in lastEmit */
                let indexLastEmit; // Index of the player in the lastEmit array
@@ -286,8 +313,6 @@ io.on('connection', function (socket) {
                }
                rooms[socket.room].splice(indexRooms, 1);
 
-               console.log("Player deleted in lastEmits.");
-
                /* Check if you enter in the allTimes Ranking */
                if(global[socket.room].mode == "basic"  && global[socket.room][i].score > allTimeglobal[allTimeglobal.length - 1].score) {
                   allTimeglobal[allTimeglobal.length - 1] = {
@@ -296,13 +321,11 @@ io.on('connection', function (socket) {
                   };
                   console.log("The player entered in the leaderboard with " + global[socket.room][i].score + " points.");
                   orderAllTimeGlobal();
-                  console.log("Leaderboard ordered !");
                   socket.emit('death', true);
                }
                else socket.emit('death', false);
 
                global[socket.room].splice(i, 1);
-               console.log("Player deleted from global.");
 
                break;
             }
@@ -310,26 +333,22 @@ io.on('connection', function (socket) {
 
           socket.leave(socket.room);
           socket.in(socket.room).emit('classement', global[socket.room]);
-          console.log("Ranking updated for the other players.");
-
-          console.log("There's now " + global[socket.room].length + " players in room " + socket.room);
 
           if(global[socket.room].length < 1) {
             delete rooms[socket.room];
             delete global[socket.room];
-            console.log("Room and global deleted.");
             socket.in(socket.room).in("spectator").emit('stopSpectate');
           }
         }
         else {
-          console.log("[LOST] Player not recognized !" +
+          console.log("ERROR : [LOST] Player not recognized !" +
             "\nRoom : " + socket.room +
             "\nPseudo : " + socket.pseudo +
             "\nID : " + socket.id +
             "\nScore : " + socket.score
           );
           console.log(global);
-          // socket.emit('message', 'There was a problem, please refresh the game.');
+          socket.emit('message', 'There was a problem, please refresh the game.', 'error');
         }
     });
 
@@ -356,7 +375,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('spectate', function(room) {
-      if(rooms[room] == null) socket.emit('message', 'This room doesn\'t exist.');
+      if(rooms[room] == null) socket.emit('message', 'This room doesn\'t exist.', 'error');
       else {
         socket.room = room;
         socket.emit('roomPlayers', rooms[socket.room], socket.room);
@@ -367,6 +386,7 @@ io.on('connection', function (socket) {
           socket.emit('classement', global[socket.room]);
           socket.emit('startNow');
         }
+        socket.in(socket.room).emit('message', 'A new spectator came.', 'info');
       }
     })
 });

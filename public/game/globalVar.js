@@ -6,8 +6,8 @@
 
 */
 
-let socket = io('localhost:3000');
-// let socket = io('192.168.1.88:3000');
+// let socket = io('localhost:3000');
+let socket = io('192.168.1.88:3000');
 // let socket = io('hcl0ud.ddns.net:3000');
 
  function initiateGVar() {
@@ -38,6 +38,14 @@ let socket = io('localhost:3000');
  	 preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y); // Initiate preview
 
    lastTime = (new Date()).getTime(); // time
+
+   /* Check if the user is on mobile */
+  	onMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if(onMobile) {
+        document.getElementById('div2').style.zoom = 1.2;
+        document.getElementById('div3').style.zoom = 1.8;
+    }
  }
 
 /* Player */
