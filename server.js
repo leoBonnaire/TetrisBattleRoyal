@@ -12,7 +12,7 @@ let lastEmits = [];
 server.listen(3000); // Listen
 
 app.use(express.static('public'))
-
+app.use('/nes.css', express.static(__dirname + '/node_modules/nes.css/css/'));
 /* Send the game to the user */
 app.get('/', function (req, res) {
     res.render('tetris.ejs', {page:"home"});

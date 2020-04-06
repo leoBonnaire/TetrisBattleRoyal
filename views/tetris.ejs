@@ -3,6 +3,7 @@
   <head>
     <title>Tretis</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="./nes.css/nes.min.css">
     <link rel="stylesheet" type="text/css" href="./style.css" />
 
     <script src="/socket.io/socket.io.js"></script>
@@ -73,7 +74,7 @@
     <div id="homeform">
 
       <div class="dropdown">
-        <button onclick="toggleButton()" class="dropbtn">Change Mode</button>
+        <button onclick="toggleButton()" class="nes-btn is-primary dropbtn">Change Mode</button>
         <div id="myDropdown" class="dropdown-content">
           <a onclick="changeMode('basic')">Basic</a>
           <a onclick="changeMode('chill')">Netflix 'nd chill</a>
@@ -83,18 +84,21 @@
 
       <p id="modeP"><p>
 
-      <form onsubmit="return enteredRoom()">
-          <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
-          <br>
-          <input id="roomChoice" class="pseudo" type="text" placeholder="Room" pattern=".{1,4}" required title="1-4 characters" name="Room">
-          <br><br>
-          <button class="button" type="submit">Join / Create</button><br><br>
-      </form>
+        <form onsubmit="return enteredRoom()">
+          <div class="nes-field">
+            <input id="pseudo" type="text" id="name_field" class="pseudo" placeholder="Pseudo" pattern=".{1,10}" required="" title="10 lettres max." name="Pseudo">
+          </div>
+            <br>
+            <input id="roomChoice" class="pseudo" type="text" placeholder="Room" pattern=".{1,4}" required title="1-4 characters" name="Room">
+            <br><br>
+            <button class="nes-btn" type="submit">Join / Create</button><br><br>
+        </form>
+  
 
       </div>
         <div id='room' style="display: none;">
-          <button class="button" onclick="leaveRoom()">Leave room</button>
-          <button class="button" onclick="imReady()">Set ready</button>
+          <button class="nes-btn is-error" onclick="leaveRoom()">Leave room</button>
+          <button class="nes-btn is-success" onclick="imReady()">Set ready</button>
         </div>
       </div>
         <% } %>
@@ -104,7 +108,7 @@
         <form onsubmit="return joinBattleRoyale()">
             <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
             <br>
-            <button class="button" type="submit">Join</button><br><br>
+            <button class="nes-btn" type="submit">Join</button><br><br>
         </form>
           <% } %>
 
