@@ -80,12 +80,13 @@ socket.on('died', function(idR) {
 
 socket.on("allTimeRanking4u", function(allTimeGlobal) {
 	allTimeR = allTimeGlobal;
-	if(!gameOver && window.location.href.split("/")[3] === "br") dispAllTimeRanking(); // On the menu only
+	if(!gameOver && window.location.href.split("/")[3] === "pr" || !gameOver && window.location.href.split("/")[3] === "br")
+		dispAllTimeRanking(); // On the menu only
 });
 
 socket.on("rooms4u", function(roomsR) {
 	allRooms = roomsR;
-	if(!gameOver && window.location.href.split("/")[3] === "br") displayPlayingRooms();
+	if(!gameOver && window.location.href.split("/")[3] === "pr") displayPlayingRooms();
 });
 
 socket.on('classement', function(global) {

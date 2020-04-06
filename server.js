@@ -17,12 +17,17 @@ app.use(express.static('public'))
 app.get('/', function (req, res) {
     res.render('tetris.ejs', {page:"home"});
 });
+app.get('/pr/', function (req, res) {
+  res.render('tetris.ejs', {page:"pr"});
+});
 app.get('/br/', function (req, res) {
   res.render('tetris.ejs', {page:"br"});
 });
 
 /* Handle a new connection */
 io.on('connection', function (socket) {
+
+  socket.emit('message', 'Il faut refaire le design des boutons', 'info');
 
     socket.on('joinRoom', function(pseudo, room, mode) {
 
@@ -47,7 +52,7 @@ io.on('connection', function (socket) {
           }
 
           socket.join(room);
-          
+
           rooms[socket.room].push({
             id: socket.id,
             pseudo: socket.pseudo,
@@ -107,6 +112,80 @@ io.on('connection', function (socket) {
         }
 
         else socket.emit('okToPlay', false, "This game is already in progress ! You can only join when the game is preparating or when it's in Netflix 'nd chill mode !"); // The room is occupied
+    });
+
+    socket.on('joinBrRoom', function(pseudo) {
+      socket.emit('message', 'This game mode is not available at this time', 'error');
+    })
+
+    socket.on('leaveRoom', function() {
+      if(typeof(rooms[socket.room]) !== 'undefined') {
+        let playerIndex; // Index of the player in the rooms array
+        for(let i = 0; i < rooms[socket.room].length; i++) {
+          if(rooms[socket.room][i].id === socket.id) {
+            playerIndex = i;
+            break;
+          }
+        }
+        rooms[socket.room].splice(playerIndex, 1);
+
+        if(rooms[socket.room].length < 1) {
+          delete rooms[socket.room];
+        }
+        else {
+          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
+          socket.in(socket.room).emit('message', socket.pseudo + ' left the room', 'info');
+        }
+
+        console.log(socket.pseudo + " left the room " + socket.room);
+        socket.leave(socket.room);
+
+        let startG = true;
+        for(let i = 0; i < rooms[socket.room].length; i++) {
+          if(!rooms[socket.room][i].ready) startG = false; // Is everyone is ready, start
+        }
+
+        if(startG) {
+          /* Initiate and send the ranking to everyone */
+          global[socket.room] = [];
+          global[socket.room].mode = rooms[socket.room].mode;
+          socket.emit('classement', global[socket.room]);
+          socket.in(socket.room).emit('classement', global[socket.room]);
+
+          /* Make everyone start the game */
+          socket.emit('startNow');
+          socket.in(socket.room).emit('startNow');
+
+          let lengthBefore = lastEmits.length;
+          for(let i = 0; i < rooms[socket.room].length; i++) {
+
+            global[socket.room].push(new Player(
+              rooms[socket.room][i].id,
+              rooms[socket.room][i].pseudo,
+              0,
+              []
+            )); // Add the new player to the global state
+
+            lastEmits[lengthBefore + i] = {
+              id: rooms[socket.room][i].id,
+              room: socket.room,
+              pseudo: rooms[socket.room][i].pseudo,
+              time: (new Date()).getTime()
+            }; // Initiate the last emit
+          }
+
+          rooms[socket.room].state = "playing"; // Update the room state
+
+          console.log("Room " + socket.room + " is now playing.");
+        }
+      }
+      else {
+        console.log("ERROR : Room not recognized !" +
+          "\n Room : " + socket.room +
+          "\n Player : " + socket.pseudo
+        );
+        socket.emit('message', 'There was a problem, please refresh the game by pressing CTRL + F5.', 'error');
+      }
     });
 
     socket.on('imReady', function() {

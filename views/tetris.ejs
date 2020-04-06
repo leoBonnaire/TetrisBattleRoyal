@@ -26,12 +26,21 @@
 
       function imReady() {
         if(!gameStarted && !spectate) socket.emit('imReady');
-        return false;
       }
 
       function enteredRoom() {
         roomHandler();
         return false;
+      }
+
+      function joinBattleRoyale() {
+        joinBr();
+        return false;
+      }
+
+      function leaveRoom() {
+        socket.emit('leaveRoom');
+        window.location.reload(true);
       }
 
     </script>
@@ -53,12 +62,13 @@
         <div id="homeMenu">
           <a href="/br">
           <img class="menuButton" src="/assets/buttons/battle-royale.png"></img></a><br><br>
+          <a href="/pr">
+          <img class="menuButton" src="/assets/buttons/private-session.png"></img></a><br><br>
           <a href="javascript:onclick=offline = true; startGame();">
           <img class="menuButton" src="/assets/buttons/play-solo.png"></img></a><br><br>
-          <img class="menuButton" src="/assets/buttons/exit.png"></img><br><br>
         </div>
       <% } %>
-      <% if ( page === "br") { %>
+      <% if ( page === "pr") { %>
   <div id="brr">
     <div id="homeform">
 
@@ -83,12 +93,20 @@
 
       </div>
         <div id='room' style="display: none;">
-          <form onsubmit="return imReady()">
-            <button class="button" type="submit">Set ready</button>
-          </form>
+          <button class="button" onclick="leaveRoom()">Leave room</button>
+          <button class="button" onclick="imReady()">Set ready</button>
         </div>
       </div>
         <% } %>
+        <% if ( page === "br") { %>
+    <div id="brr">
+      <div id="homeform">
+        <form onsubmit="return joinBattleRoyale()">
+            <input id="pseudo" class="pseudo" type="text" placeholder="Pseudo" pattern=".{1,10}" required title="10 lettres max." name="Pseudo">
+            <br>
+            <button class="button" type="submit">Join</button><br><br>
+        </form>
+          <% } %>
 
         <div id="death" style="display: none;">
           <h1><strong>You lost.</strong></h1>

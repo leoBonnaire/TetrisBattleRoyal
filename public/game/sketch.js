@@ -36,6 +36,12 @@ function roomHandler() {
 	socket.emit('joinRoom', pseudo, room, mode); // Send the user in the room
 }
 
+function joinBr() {
+  pseudo = document.getElementById('pseudo').value;
+
+  socket.emit('joinBrRoom', pseudo);
+}
+
 function startGame() {
 	if(!gameStarted) {
     gameStarted = true; // The game starts

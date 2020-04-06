@@ -43,7 +43,7 @@ td, th {
 /* Active rooms */
 #div3 {
 	position: fixed;
-	right: 30px; bottom: 40%;
+	right: 15px; bottom: 40%;
 }
 
 .menuButton {
@@ -79,7 +79,7 @@ td, th {
 
 /* Pseudo input bar */
 .pseudo {
-	width: 40%;
+	width: 35%;
 	padding: 12px 20px;
   margin: 8px 0;
 	display: inline-block;
