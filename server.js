@@ -27,8 +27,6 @@ app.get('/br/', function (req, res) {
 /* Handle a new connection */
 io.on('connection', function (socket) {
 
-  socket.emit('message', 'Il faut refaire le design des boutons', 'info');
-
     socket.on('joinRoom', function(pseudo, room, mode) {
 
         if(rooms[room] == null) {
