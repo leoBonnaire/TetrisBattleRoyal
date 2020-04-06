@@ -27,6 +27,10 @@ app.get('/br/', function (req, res) {
 /* Handle a new connection */
 io.on('connection', function (socket) {
 
+    socket.emit('yourId', socket.id); // Send its ID to the player
+
+    killAfk(socket);
+
     socket.on('joinRoom', function(pseudo, room, mode) {
 
         if(rooms[room] == null) {
@@ -87,7 +91,6 @@ io.on('connection', function (socket) {
             else if(rooms[room].mode === 'basic') socket.emit('okToPlay', false, "You must set your mode to Basic to join that room.");
           }
           else {
-            socket.emit('yourId', socket.id); // Send its ID to the player
             socket.emit('okToPlay', true, ' '); // The player can enter the room
 
             socket.join(room);
@@ -103,9 +106,9 @@ io.on('connection', function (socket) {
 
             console.log(socket.pseudo + " joined room " + socket.room);
 
-            socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
+            socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
             socket.in(socket.room).emit('message', socket.pseudo + " joined.", 'info')
-            socket.emit('roomPlayers', rooms[socket.room], socket.room);
+            socket.emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
           }
         }
 
@@ -126,14 +129,6 @@ io.on('connection', function (socket) {
           }
         }
         rooms[socket.room].splice(playerIndex, 1);
-
-        if(rooms[socket.room].length < 1) {
-          delete rooms[socket.room];
-        }
-        else {
-          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
-          socket.in(socket.room).emit('message', socket.pseudo + ' left the room', 'info');
-        }
 
         console.log(socket.pseudo + " left the room " + socket.room);
         socket.leave(socket.room);
@@ -176,6 +171,14 @@ io.on('connection', function (socket) {
 
           console.log("Room " + socket.room + " is now playing.");
         }
+
+        if(rooms[socket.room].length < 1) {
+          delete rooms[socket.room];
+        }
+        else {
+          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
+          socket.in(socket.room).emit('message', socket.pseudo + ' left the room', 'info');
+        }
       }
       else {
         console.log("ERROR : Room not recognized !" +
@@ -203,9 +206,9 @@ io.on('connection', function (socket) {
         }
 
         /* Send the room to everyone */
-        socket.emit('roomPlayers', rooms[socket.room], socket.room);
+        socket.emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
         if(rooms[socket.room].mode != 'chill' || rooms[socket.room].state == 'preparating') {
-          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room);
+          socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
         }
 
         if(startG) {
@@ -263,14 +266,6 @@ io.on('connection', function (socket) {
               }
           }
 
-          let indexLastEmit; // Index of the player in the lastEmit array
-          for (let i = 0; i < lastEmits.length; i++) {
-              if (lastEmits[i].id === socket.id) {
-                  indexLastEmit = i; // Find the player's index
-                  break;
-              }
-          }
-
           /* If one oo more row was completed */
           if(score - socket.score !== 0 && global[socket.room].length > 1 && global[socket.room].mode !== 'chill') {
             /* Calculate the number of rows to send */
@@ -299,56 +294,13 @@ io.on('connection', function (socket) {
           socket.score = score;
           global[socket.room][indexplayer].score = socket.score;
           global[socket.room][indexplayer].board = board;
-          lastEmits[indexLastEmit].time = (new Date()).getTime(); // Update the last time the player was seen
+
 
           orderGlobal(socket.room); // Rank the players
 
           /* Send the global ranking to everyone */
           socket.emit('classement', global[socket.room]);
           socket.in(socket.room).emit('classement', global[socket.room]);
-
-          /* Look out for AFKs and KILL THEM */
-          let now = (new Date()).getTime();
-
-          for(let i = 0; i < lastEmits.length; i++) {
-            if(now - lastEmits[i].time > 60000) { // 1 min
-
-              let afkPlayer = lastEmits[i];
-
-              let indexplayer; // Index of the player in the global state
-              for (let j = 0; j < global[lastEmits[i].room].length; j++) {
-                  if (global[afkPlayer.room][j].id === afkPlayer.id) {
-                      indexplayer = j;
-                      break;
-                  }
-              }
-
-              /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
-              if(typeof(global[afkPlayer.room][indexplayer]) !== 'undefined') {
-                socket.emit('died', global[afkPlayer.room][indexplayer].id);
-                socket.in(lastEmits[i].room).emit('died', global[afkPlayer.room][indexplayer].id);
-
-                console.log(
-                  global[afkPlayer.room][indexplayer].pseudo +
-                  " was kicked due to AFKness with " +
-                  global[afkPlayer.room][indexplayer].score +
-                  " points."
-                );
-
-                socket.in(socket.room).emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
-
-                global[afkPlayer.room].splice(indexplayer, 1);
-                lastEmits.splice(i, 1);
-
-                if(global[afkPlayer.room].length < 1) {
-                  delete rooms[afkPlayer.room];
-                  delete global[afkPlayer.room];
-                  socket.in(afkPlayer.room).in("spectator").emit('stopSpectate');
-                }
-                break;
-              }
-            }
-          }
         }
         else {
           console.log("ERROR : [SCORE] Player not recognized !" +
@@ -360,6 +312,9 @@ io.on('connection', function (socket) {
           console.log(global);
           socket.emit('message', 'There was a problem, please refresh the game.', 'error');
         }
+
+        killAfk(socket);
+
       });
 
     socket.on('lost', function() {
@@ -452,7 +407,8 @@ io.on('connection', function (socket) {
     });
 
     socket.on('spectate', function(room) {
-      if(rooms[room] == null) socket.emit('message', 'This room doesn\'t exist.', 'error');
+      if(rooms[room] == null) socket.emit('message', 'This room doesn\'t exist. Try refreshing the game', 'error');
+      else if(rooms[room].state === "preparating") socket.emit('message', 'Wait for the game to begin before spectating', 'warning')
       else {
         socket.room = room;
         socket.emit('roomPlayers', rooms[socket.room], socket.room);
@@ -466,6 +422,21 @@ io.on('connection', function (socket) {
         socket.in(socket.room).emit('message', 'A new spectator came.', 'info');
       }
     })
+
+    socket.on('imStillAlive', function() {
+      let indexLastEmit = -1; // Index of the player in the lastEmit array
+      for (let i = 0; i < lastEmits.length; i++) {
+          if (lastEmits[i].id === socket.id) {
+              indexLastEmit = i; // Find the player's index
+              break;
+          }
+      }
+      if(indexLastEmit !== -1) {
+        lastEmits[indexLastEmit].time = (new Date()).getTime(); // Update the last time the player was seen
+      }
+
+    });
+
 });
 
 /* Define what a player is */
@@ -479,6 +450,52 @@ class Player {
 }
 
 /* Functions */
+
+function killAfk(socket) {
+  /* Look out for AFKs and KILL THEM */
+  let now = (new Date()).getTime();
+  for(let i = 0; i < lastEmits.length; i++) {
+    if(now - lastEmits[i].time > 60000) { // 1 min
+
+      let afkPlayer = lastEmits[i];
+
+      let indexplayer; // Index of the player in the global state
+      for (let j = 0; j < global[lastEmits[i].room].length; j++) {
+          if (global[afkPlayer.room][j].id === afkPlayer.id) {
+              indexplayer = j;
+              break;
+          }
+      }
+
+      /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
+      if(typeof(global[afkPlayer.room][indexplayer]) !== 'undefined') {
+
+        socket.emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
+        socket.in(afkPlayer.room).emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
+
+        socket.emit('died', global[afkPlayer.room][indexplayer].id);
+        socket.in(lastEmits[i].room).emit('died', global[afkPlayer.room][indexplayer].id);
+
+        console.log(
+          global[afkPlayer.room][indexplayer].pseudo +
+          " was kicked due to AFKness with " +
+          global[afkPlayer.room][indexplayer].score +
+          " points."
+        );
+
+        global[afkPlayer.room].splice(indexplayer, 1);
+        lastEmits.splice(i, 1);
+
+        if(global[afkPlayer.room].length < 1) {
+          delete rooms[afkPlayer.room];
+          delete global[afkPlayer.room];
+          socket.in(afkPlayer.room).in("spectator").emit('stopSpectate');
+        }
+        break;
+      }
+    }
+  }
+}
 
 /* Initiate the allTime Ranking */
 function createAllTimeRanking() {

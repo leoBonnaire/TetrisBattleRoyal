@@ -82,6 +82,8 @@ function draw() {
 
 			// This is executed every delta time
 
+      socket.emit('imStillAlive'); // Tell the server you are not away
+
 			if(addScore != 0) {
 				if(addScore >= 40) addScore = 100; // Tretis was made
 				score += addScore; // Update the score
@@ -211,11 +213,8 @@ function windowResized() {
 
 function changeMode(modeToSet) {
   mode = modeToSet;
-  if(document.getElementById('modeP') !== null) {
-    if(mode == 'chill') document.getElementById('modeP').innerHTML = "Gamemode : Netflix 'nd chill  ";
-    else if(mode == 'basic') document.getElementById('modeP').innerHTML = "Gamemode : Basic ";
-    else if(mode == 'boom') document.getElementById('modeP').innerHTML = "Gamemode : Boom !";
-  }
+  if(document.getElementById('modeP') !== null)
+    document.getElementById('modeP').innerHTML = "Gamemode : " + showMode(mode);
 }
 
 /* Output a random int */
@@ -235,4 +234,11 @@ function printMessage(message, type) {
   setTimeout(function() {
     document.getElementById('message').style.display = "block";
   }, 50);
+}
+
+function showMode(mode) {
+  if(mode === 'basic') return "Basic";
+  else if(mode === 'chill') return "Netflix 'nd Chill";
+  else if(mode === 'boom') return "Boom !";
+  else return "WTF IS THIS MODE";
 }

@@ -31,7 +31,7 @@ socket.on('okToPlay', function(isOk, text) {
 	}
 });
 
-socket.on('roomPlayers', function(roomPlayers, room) {
+socket.on('roomPlayers', function(roomPlayers, room, mode) {
   let listItem;
   roomPlayersArray = roomPlayers;
   if (document.getElementById("div1"))
@@ -45,7 +45,7 @@ socket.on('roomPlayers', function(roomPlayers, room) {
   listContainer.setAttribute("id", "div1");
 
 	let roomDisplay = document.createElement('h2');
-	roomDisplay.innerHTML = "Room : " + room;
+	roomDisplay.innerHTML = "Room #" + room + " . Gamemode : " + showMode(mode) + "<br><br>";
 	listContainer.appendChild(roomDisplay);
 
   // Make the list
@@ -73,8 +73,8 @@ socket.on('roomPlayers', function(roomPlayers, room) {
 
 socket.on('died', function(idR) {
 	if(idR === id && !spectate) {
-		alert("Your AFKness killed you");
 		if(gameStarted && !gameOver) endGame();
+		printMessage('You were AFk so you were kicked out of the game. <br>You idiot.', 'warning');
 	}
 });
 
