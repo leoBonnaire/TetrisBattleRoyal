@@ -1,11 +1,14 @@
 @import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-
+@font-face{
+  font-family : "PressStart2P";
+  src : url('./nes.css/PressStart2P.ttf');
+}
 /* Main styles */
 
 html, body {margin: 0; height: 100%}
 
 body {
-	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+	font-family: 'PressStart2P';
 	margin: 0;
   background-color:#1a1a1a;
   color:#f9f9f9;
@@ -43,7 +46,7 @@ td, th {
 /* Active rooms */
 #div3 {
 	position: fixed;
-	right: 15px; bottom: 40%;
+	right: 30px; bottom: 40%;
 }
 
 .menuButton {
@@ -58,8 +61,9 @@ td, th {
 }
 
 /* Button style */
+/* 
 .button {
-  background-color: #990099; /* Purple */
+  background-color: #990099; 
   border: none;
   border-radius: 15px;
   color: white;
@@ -72,14 +76,15 @@ td, th {
   cursor: pointer;
 	zoom: 1.5
 }
-
+*/
+/* 
 .button:hover {
 	background-color: #800080;
 }
-
+*/
 /* Pseudo input bar */
 .pseudo {
-	width: 35%;
+	width: 40%;
 	padding: 12px 20px;
   margin: 8px 0;
 	display: inline-block;
@@ -90,7 +95,7 @@ td, th {
 }
 
 
-/* Dropdown menu for mode selection */
+/* Dropdown menu for mode selection
 .dropbtn {
 	background-color: #990099;
 	border-radius: 15px;
@@ -105,7 +110,7 @@ td, th {
 .dropbtn:hover, .dropbtn:focus {
 	background-color: #800080;
 }
-
+ */
 .dropdown {
 	position: relative;
 	display: inline-block;
@@ -122,7 +127,7 @@ td, th {
 }
 
 .dropdown-content a {
-	color: black;
+	color: black !important ;
 	padding: 12px 16px;
 	text-decoration: none;
 	display: block;
@@ -214,4 +219,8 @@ td, th {
 @keyframes animatebot {
   from {bottom:-300px; opacity:0}
   to {bottom:0; opacity:1}
+}
+.nes-input
+{
+  width:50%;
 }
