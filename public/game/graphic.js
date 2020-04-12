@@ -31,10 +31,6 @@ function refreshDisplay(full = false) {
 /* Display all the infos */
 function displayInfos() {
 
-	dispNext(); // Next piece and separations
-
-	push();
-	translate(10 * SQ, 5 * SQ);
 
 	dispPlayerInfos(); // Display the player's infos
 	if(!offline) {
