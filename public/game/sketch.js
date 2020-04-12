@@ -242,8 +242,10 @@ function windowResized() {
 function changeMode(modeToSet) {
   mode = modeToSet;
   if(document.getElementById('modeP') !== null)
+  {
     document.getElementById('modeP').innerHTML = showMode(mode);
     document.getElementById('hoverMode').innerHTML = hoverMode(mode);
+  }
 }
 
 /* Output a random int */
