@@ -214,7 +214,8 @@ function windowResized() {
 function changeMode(modeToSet) {
   mode = modeToSet;
   if(document.getElementById('modeP') !== null)
-    document.getElementById('modeP').innerHTML = "Gamemode : " + showMode(mode);
+    document.getElementById('modeP').innerHTML = showMode(mode);
+    document.getElementById('hoverMode').innerHTML = hoverMode(mode);
 }
 
 /* Output a random int */
@@ -240,5 +241,13 @@ function showMode(mode) {
   if(mode === 'basic') return "Basic";
   else if(mode === 'chill') return "Netflix 'nd Chill";
   else if(mode === 'boom') return "Boom !";
+  else return "WTF IS THIS MODE";
+}
+
+
+function hoverMode(mode) {
+  if(mode === 'basic') return "Basic Tretis Gamemode (with LeaderBoard)";
+  else if(mode === 'chill') return "Chill Gamemode (not in LeaderBoard)";
+  else if(mode === 'boom') return "Fun and explosive Gamemode ! (not in LeaderBoard)";
   else return "WTF IS THIS MODE";
 }

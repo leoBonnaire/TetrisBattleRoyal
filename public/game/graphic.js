@@ -174,16 +174,16 @@ function dispAllTimeRanking() {
   // Make a container element for the list
   let listContainer = document.createElement('div');
   listContainer.setAttribute("id", "div2");
-
+  listContainer.style.padding = "2%";
   // Make the list
   let listElement = document.createElement('table');
-	listElement.align = "left";
+	listElement.align = "center";
 
 	// Create the title : Leaderboard
 	titelContainer = document.createElement("tr");
 	titel = document.createElement('th');
 	titel.colSpan = "2";
-	titel.innerHTML = "Leaderboard";
+	titel.innerHTML = "<i class='nes-icon trophy'></i><br> Leaderboard";
 	titelContainer.appendChild(titel);
 	listElement.appendChild(titelContainer);
 
@@ -221,6 +221,8 @@ function dispAllTimeRanking() {
 	// Add it to the page
   document.getElementById('homeform').appendChild(listContainer);
   listContainer.appendChild(listElement);
+  
+  document.getElementById('bottomTables').appendChild(listContainer);
 }
 
 /* Display the rooms */
@@ -238,16 +240,16 @@ function displayPlayingRooms() {
   // Make a container element for the list
   let listContainer = document.createElement('div');
   listContainer.setAttribute("id", "div3")
-
+  listContainer.style.padding = "2%";
   // Make the list
   let listElement = document.createElement('table');
-	listElement.align = "left";
+	listElement.align = "center";
 
 	// Create the title : Leaderboard
 	titelContainer = document.createElement("tr");
 	titel = document.createElement('th');
 	titel.colSpan = "5";
-	titel.innerHTML = "Active rooms";
+	titel.innerHTML = "<i class='nes-logo'></i><br> Active rooms";
 	titelContainer.appendChild(titel);
 	listElement.appendChild(titelContainer);
 
@@ -327,6 +329,8 @@ function displayPlayingRooms() {
 	// Add it to the page
   document.getElementById('homeform').appendChild(listContainer);
   listContainer.appendChild(listElement);
+
+  document.getElementById('bottomTables').appendChild(listContainer);
 }
 
 /* Draw a tretomino square */

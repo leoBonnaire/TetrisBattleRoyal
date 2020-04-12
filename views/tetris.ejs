@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="./style.css" />
 
     <script src="/socket.io/socket.io.js"></script>
-
     <!-- p5 Librairies -->
     <script src="./p5.min.js"></script>
     <script src="./p5.dom.js"></script>
@@ -57,7 +56,9 @@
     <div id="wholePage">
       <br><br>
 
-      <a href="../"><img src="/assets/banner.png" style="max-width: 800px;" href=""></img></a>
+      
+      <div><a class="my-logo" href="../">Tretis</a></div>
+
       <br><br><br>
       <% if ( page === "home") { %>
         <div id="homeMenu">
@@ -83,9 +84,10 @@
       </div>
 
       <br><br>
-
-      <p id="modeP"><p>
-
+      <div style="display: inline;">
+      <p style="display:inline">Gamemode : </p><div class="hover"><p style="display:inline" class="nes-text is-primary" id="modeP"><p><span id="hoverMode" class="hoverText"></span>
+      </div>
+      </div>
         <form onsubmit="return enteredRoom()">
           <div class="nes-field">
             <input id="pseudo" type="text" id="name_field" class="pseudo" placeholder="Pseudo" pattern=".{1,10}" required="" title="10 lettres max." name="Pseudo">
@@ -95,8 +97,9 @@
             <br><br>
             <button class="nes-btn" type="submit">Join / Create</button><br><br>
         </form>
-
-
+      </div>
+        <div id="bottomTables" class="bottomTables">
+          
       </div>
         <div id='room' style="display: none;">
           <button class="nes-btn is-error" onclick="leaveRoom()">Leave room</button>
@@ -154,6 +157,5 @@
     }
   }
 </script>
-
   </body>
 </html>

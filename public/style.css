@@ -36,18 +36,18 @@ td, th {
   text-align: center;
   padding: 8px;
 }
-
-/* Leaderboard */
-#div2 {
-	position: fixed;
-	left: 20px; top: 20px;
+@media (min-width: 1400px) and (orientation:landscape) {
+  /* Leaderboard */
+  #div2 {
+    position: fixed;
+    left: 20px; top: 40px;
+  }
+  #div3 {
+    position: fixed;
+    right: 20px; top: 40px;
+  }
 }
 
-/* Active rooms */
-#div3 {
-	position: fixed;
-	right: 30px; bottom: 40%;
-}
 
 .menuButton {
 	border: 2px solid white;
@@ -223,4 +223,53 @@ td, th {
 .nes-input
 {
   width:50%;
+}
+.nes-icon
+{
+  box-shadow:none;
+}
+.hover {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.hover .hoverText {
+  visibility: hidden;
+  width: 240px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  text-decoration: none;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.hover:hover .hoverText {
+  visibility: visible;
+  text-decoration: none;
+}
+
+.bottomTables{
+  display:flex;
+  justify-content: center;
+  padding: 5%; 
+}
+.my-logo {
+  color: #ffffff;
+  font-size: 5vw;
+  font-family: "Press Start 2P";
+  font-style: "italic";
+  font-weight: 500;
+  text-shadow: #000000 1px 1px 0px, #000000 2px 2px 0px, #000000 3px 3px 0px, #000000 4px 4px 0px, #000000 5px 5px 0px, #000000 6px 6px 0px, #000000 7px 7px 0px, #000000 8px 8px 0px, #000000 9px 9px 0px, #000000 10px 10px 0px;
+  line-height: 1.1;
+}
+.my-logo:hover{
+  opacity:1.0;
+  box-shadow:none;
+  text-decoration:none;
+  color:white;
 }
