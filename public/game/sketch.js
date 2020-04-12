@@ -60,15 +60,43 @@ function endGame() {
     document.getElementById('message').style.display = "none"; // Hide the last message
     canvas.elt.style.display = "none"; // Hide the canvas
     document.getElementById('wholePage').style.display = 'block'; // Show the page
+    if(document.getElementById("brr") !== null) {
+      document.getElementById("room").style.display = "none";
+      document.getElementById("brr").style.display = "block";
+    }
     document.getElementById("death").style.display = "block"; // Show the death screen
     if(!offline) {
       socket.emit('lost'); // Tell the server you died
-      document.getElementById("brr").style.display = "none"; // Hide the menu
+      if(document.getElementById("brr") === null) document.getElementById("brr").style.display = "none"; // Hide the menu
     }
     else {
       document.getElementById("homeMenu").style.display = "none"; // Hide the menu
       document.getElementById("scoreS").innerHTML = "You scored " + score + " points."; // Show the score
     }
+  }
+}
+
+function endGameAsLegend() {
+  if(!spectate && gameStarted && !gameOver) {
+    gameOver = true;
+    document.getElementById('message').style.display = "none"; // Hide the last message
+    canvas.elt.style.display = "none"; // Hide the canvas
+    document.getElementById('wholePage').style.display = 'block'; // Show the page
+    if(document.getElementById("brr") !== null) {
+      document.getElementById("room").style.display = "none";
+      document.getElementById("brr").style.display = "block";
+    }
+    document.getElementById("death").style.display = "block"; // Show the death screen
+    if(!offline) {
+      socket.emit('lost'); // Tell the server you died
+      if(document.getElementById("brr") === null) document.getElementById("brr").style.display = "none"; // Hide the menu
+    }
+    else {
+      document.getElementById("homeMenu").style.display = "none"; // Hide the menu
+      document.getElementById("scoreS").innerHTML = "You scored " + score + " points."; // Show the score
+    }
+    document.getElementById('lostThing').innerHTML = "You WON !";
+    printMessage("You are THE WINNER. You're such a LEGEND!!!<br>just ... WOW", 'success');
   }
 }
 
@@ -240,5 +268,6 @@ function showMode(mode) {
   if(mode === 'basic') return "Basic";
   else if(mode === 'chill') return "Netflix 'nd Chill";
   else if(mode === 'boom') return "Boom !";
+  else if(mode === 'br') return "Battle Royal";
   else return "WTF IS THIS MODE";
 }

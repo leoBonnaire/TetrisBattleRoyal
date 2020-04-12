@@ -43,11 +43,7 @@ td, th {
 	left: 20px; top: 20px;
 }
 
-/* Active rooms */
-#div3 {
-	position: fixed;
-	right: 30px; bottom: 40%;
-}
+
 
 .menuButton {
 	border: 2px solid white;
@@ -61,9 +57,9 @@ td, th {
 }
 
 /* Button style */
-/* 
+/*
 .button {
-  background-color: #990099; 
+  background-color: #990099;
   border: none;
   border-radius: 15px;
   color: white;
@@ -77,7 +73,7 @@ td, th {
 	zoom: 1.5
 }
 */
-/* 
+/*
 .button:hover {
 	background-color: #800080;
 }
