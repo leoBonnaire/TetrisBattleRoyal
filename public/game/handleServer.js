@@ -74,7 +74,7 @@ socket.on('roomPlayers', function(roomPlayers, room, mode) {
 socket.on('died', function(idR) {
 	if(idR === id && !spectate) {
 		if(gameStarted && !gameOver) endGame();
-		printMessage('You were AFk so you were kicked out of the game. <br>You idiot.', 'warning');
+		printMessage('You were AFk so you were kicked out of the game.<br>How dare you!<br>You idiot.', 'warning');
 	}
 });
 
@@ -108,7 +108,7 @@ socket.on("death", function(isALegend) {
 	if(!spectate) {
 		let scoreSentence = document.getElementById("scoreS");
 		if(isALegend) {
-			scoreSentence.innerHTML = "But you made it to the leaderboard with " + score + " points !";
+			scoreSentence.innerHTML = "You made it to the leaderboard with " + score + " points !";
 			// TODO : Fireworks
 		}
 		else scoreSentence.innerHTML = "You scored " + score + " points.";
@@ -124,5 +124,11 @@ socket.on('addRow', function(playerId) {
 		if(mode !== 'chill') addRow();
 		if(mode == 'boom') score -= 5;
 		socket.emit('score', score, board);
+	}
+});
+
+socket.on('wonBR', function(idR) {
+	if(idR === id && !spectate) {
+		if(gameStarted && !gameOver) endGameAsLegend();
 	}
 });

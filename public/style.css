@@ -48,6 +48,10 @@ td, th {
   }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> dc782a76e428b7ea29d0bfd27907caec41829d75
 
 .menuButton {
 	border: 2px solid white;
@@ -61,9 +65,9 @@ td, th {
 }
 
 /* Button style */
-/* 
+/*
 .button {
-  background-color: #990099; 
+  background-color: #990099;
   border: none;
   border-radius: 15px;
   color: white;
@@ -77,7 +81,7 @@ td, th {
 	zoom: 1.5
 }
 */
-/* 
+/*
 .button:hover {
 	background-color: #800080;
 }
@@ -224,6 +228,7 @@ td, th {
 {
   width:50%;
 }
+<<<<<<< HEAD
 .nes-icon
 {
   box-shadow:none;
@@ -273,3 +278,5 @@ td, th {
   text-decoration:none;
   color:white;
 }
+=======
+>>>>>>> dc782a76e428b7ea29d0bfd27907caec41829d75

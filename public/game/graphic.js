@@ -31,10 +31,6 @@ function refreshDisplay(full = false) {
 /* Display all the infos */
 function displayInfos() {
 
-	/* Adapt the textSize for mobile users */
-	if(onMobile) textSize(25);
-	else textSize(15);
-
 	dispNext(); // Next piece and separations
 
 	push();

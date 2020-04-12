@@ -34,6 +34,7 @@
       }
 
       function joinBattleRoyale() {
+        changeMode("br");
         joinBr();
         return false;
       }
@@ -71,7 +72,7 @@
         </div>
       <% } %>
       <% if ( page === "pr") { %>
-  <div id="brr">
+  <div id="brr" onload="changeMode('basic');">
     <div id="homeform">
 
       <div class="dropdown">
@@ -107,6 +108,9 @@
           <br><br>
         </div>
       </div>
+      <script type="text/javascript">
+        changeMode('basic');
+      </script>
         <% } %>
         <% if ( page === "br") { %>
     <div id="brr">
@@ -116,10 +120,15 @@
             <br>
             <button class="nes-btn" type="submit">Join</button><br><br>
         </form>
+      </div>
+
+        <div id='room' style="display: block;">
+          <br><br>
+        </div>
           <% } %>
 
         <div id="death" style="display: none;">
-          <h1><strong>You lost.</strong></h1>
+          <h1><strong id="lostThing">You lost.</strong></h1>
           <h3 id="scoreS"></h3>
           <br>
           <a href="../"><img class="menuButton" src="/assets/buttons/menuButton.png"></img></a>

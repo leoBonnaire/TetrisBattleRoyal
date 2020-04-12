@@ -6,9 +6,9 @@
 
 */
 
-// let socket = io('localhost:3000');
+let socket = io('localhost:3000');
 // let socket = io('192.168.1.88:3000');
-let socket = io('tetrisbr.ddns.net:3000');
+// let socket = io('hcl0ud.ddns.net:3000');
 
  function initiateGVar() {
 
@@ -28,7 +28,6 @@ let socket = io('tetrisbr.ddns.net:3000');
    yOff = 0;
 
    spectate = false;
-   changeMode("basic");
    roomPlayersArray = [];
 
    board = make2DArray(COLL, ROW, 0);
