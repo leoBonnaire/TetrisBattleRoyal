@@ -37,6 +37,7 @@
  	 preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y); // Initiate preview
 
    lastTime = (new Date()).getTime(); // time
+   lastTime2 = (new Date()).getTime(); // time
 
    /* Check if the user is on mobile */
   	onMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -57,7 +58,7 @@ let addScore; // Score to add (use to check the tretis)
 
 /* Time */
 
-let time, lastTime; // Keep tracks of time
+let time, lastTime, lastTime2; // Keep tracks of time
 let deltaT; // Time between each piece fall in ms
 
 /* Board size */

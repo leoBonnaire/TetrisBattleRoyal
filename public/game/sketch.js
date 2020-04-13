@@ -109,15 +109,19 @@ function endGameAsLegend() {
 
 function draw() {
 
-	if(gameStarted && !gameOver) {
+  time = (new Date()).getTime(); // Update the time
 
-		time = (new Date()).getTime(); // Update the time
+  if(time - lastTime2 >= 1000) {
+    socket.emit('imStillAlive'); // Tell the server you are not away
+    lastTime2 = time;
+  }
+
+	if(gameStarted && !gameOver) {
 
 		if(time - lastTime >= deltaT) {
 
 			// This is executed every delta time
 
-      socket.emit('imStillAlive'); // Tell the server you are not away
 
 			if(addScore != 0) {
 				if(addScore >= 40) addScore = 100; // Tretis was made

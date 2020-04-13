@@ -89,7 +89,8 @@ io.on('connection', function (socket) {
             id: rooms[socket.room][i].id,
             room: socket.room,
             pseudo: rooms[socket.room][i].pseudo,
-            time: (new Date()).getTime()
+            time: (new Date()).getTime(),
+            state: "inGame"
           }); // Initiate the last emit
         }
 
@@ -112,6 +113,14 @@ io.on('connection', function (socket) {
               ready: false
             });
 
+            lastEmits.push({
+              id: rooms[socket.room][rooms[socket.room].length - 1].id,
+              room: socket.room,
+              pseudo: rooms[socket.room][rooms[socket.room].length - 1].pseudo,
+              time: (new Date()).getTime(),
+              state: "inRoom"
+            }); // Initiate the last emit
+
             console.log(socket.pseudo + " joined room " + socket.room);
 
             socket.in(socket.room).emit('roomPlayers', rooms[socket.room], socket.room, rooms[socket.room].mode);
@@ -125,10 +134,7 @@ io.on('connection', function (socket) {
 
     socket.on('joinBrRoom', function(pseudo) {
 
-      console.log("Aie");
-
       socket.emit('okToPlay', true, ' '); // The player can enter the room, or create a new one
-      socket.emit('This game mode is still in devellopement. Some bugs might occur');
 
       socket.pseudo = pseudo;
       socket.score = 0;
@@ -176,13 +182,12 @@ io.on('connection', function (socket) {
               0,
               make2DArray(10, 20, 0)
             )); // Add the new player to the global state
+          }
 
-            lastEmits[lengthBefore + i] = {
-              id: brRooms[socket.room][i].id,
-              room: socket.room,
-              pseudo: brRooms[socket.room][i].pseudo,
-              time: (new Date()).getTime()
-            }; // Initiate the last emit
+          /* Update the state of everyone in the lastEmits */
+          for(let i = 0; i < lastEmits.length; i++) {
+            if(lastEmits[i].room === socket.room)
+              lastEmits[i].state = "inGame";
           }
 
           /* Send to everyone */
@@ -209,9 +214,17 @@ io.on('connection', function (socket) {
         socket.room = newRoom;
         socket.join(newRoom);
 
+        lastEmits.push({
+          id: socket.id,
+          room: socket.room,
+          pseudo: socket.pseudo,
+          time: (new Date()).getTime(),
+          state: "inRoom"
+        }); // Initiate the last emit
+
         socket.emit('roomPlayers', brRooms[socket.room], socket.room, 'br');
 
-        socket.emit("message", "No preparating lobby found.<br>New lobby created with success!<br>Waiting for players to join.", "success");
+        socket.emit("message", "No preparating lobby found ...<br>New lobby created with success!<br>Waiting for players to join ...", "success");
         console.log("New BR room create by " + socket.pseudo + " : #" + socket.room);
       }
 
@@ -219,14 +232,26 @@ io.on('connection', function (socket) {
 
     socket.on('leaveRoom', function() {
       if(typeof(rooms[socket.room]) !== 'undefined') {
-        let playerIndex; // Index of the player in the rooms array
+
+        /* Delete from room */
+        let playerIndex = -1; // Index of the player in the rooms array
         for(let i = 0; i < rooms[socket.room].length; i++) {
           if(rooms[socket.room][i].id === socket.id) {
             playerIndex = i;
             break;
           }
         }
-        rooms[socket.room].splice(playerIndex, 1);
+        if(playerIndex !== -1) rooms[socket.room].splice(playerIndex, 1);
+
+        /* Delete from lastEmits */
+        let indexLastEmit = -1;
+        for(let i = 0; i < lastEmits.length; i++) {
+          if(lastEmits[i].id === socket.id) {
+            indexLastEmit = i;
+            break;
+          }
+        }
+        if(indexLastEmit !== -1) lastEmits.splice(indexLastEmit, 1);
 
         console.log(socket.pseudo + " left the room " + socket.room);
         socket.leave(socket.room);
@@ -256,13 +281,12 @@ io.on('connection', function (socket) {
               0,
               []
             )); // Add the new player to the global state
+          }
 
-            lastEmits[lengthBefore + i] = {
-              id: rooms[socket.room][i].id,
-              room: socket.room,
-              pseudo: rooms[socket.room][i].pseudo,
-              time: (new Date()).getTime()
-            }; // Initiate the last emit
+          /* Update the state of everyone in the lastEmits */
+          for(let i = 0; i < lastEmits.length; i++) {
+            if(lastEmits[i].room === socket.room)
+              lastEmits[i].state = "inGame";
           }
 
           rooms[socket.room].state = "playing"; // Update the room state
@@ -324,13 +348,12 @@ io.on('connection', function (socket) {
               0,
               make2DArray(10, 20, 0)
             )); // Add the new player to the global state
+          }
 
-            lastEmits[lengthBefore + i] = {
-              id: rooms[socket.room][i].id,
-              room: socket.room,
-              pseudo: rooms[socket.room][i].pseudo,
-              time: (new Date()).getTime()
-            }; // Initiate the last emit
+          /* Update the state of everyone in the lastEmits */
+          for(let i = 0; i < lastEmits.length; i++) {
+            if(lastEmits[i].room === socket.room)
+              lastEmits[i].state = "inGame";
           }
 
           socket.emit('classement', global[socket.room]);
@@ -356,7 +379,7 @@ io.on('connection', function (socket) {
 
         if(typeof(global[socket.room]) !== 'undefined' || typeof(globalBR[socket.room]) !== 'undefined') {
           if(typeof(global[socket.room]) !== 'undefined') {
-            let indexplayer; // Index of the player in the global state
+            let indexplayer = -1; // Index of the player in the global state
             for (let i = 0; i < global[socket.room].length; i++) {
                 if (global[socket.room][i].id === socket.id) {
                     indexplayer = i; // Find the player's index
@@ -364,41 +387,53 @@ io.on('connection', function (socket) {
                 }
             }
 
-            /* If one oo more row was completed */
-            if(score - socket.score !== 0 && global[socket.room].length > 1 && global[socket.room].mode !== 'chill') {
-              /* Calculate the number of rows to send */
-              let numberofRowsToSend;
-              if(global[socket.room].mode === 'boom')
-                numberofRowsToSend = (Math.floor((score - socket.score) / 10) + 1) % 15;
-              else numberofRowsToSend = (Math.floor((score - socket.score) / 10)) % 6;
-              if(numberofRowsToSend !== 0) {
-                console.log(socket.pseudo + " send " + numberofRowsToSend + " row(s).");
-                socket.in(socket.room).emit('message', socket.pseudo + ' send ' + numberofRowsToSend + " row(s) !", 'warning')
-                for(let i = 0; i < numberofRowsToSend; i++) {
-                  let randPlayerIndex = randInt(global[socket.room].length - 1); // Pick a random player
-                  if(randPlayerIndex == indexplayer) { // If it picked itself
-                    if(typeof(global[socket.room][indexplayer + 1] !== 'undefined')) // Check if the personn above exist
-                      randPlayerIndex++; // Pick that player
-                    else randPlayerIndex--; // Else, pick the player below
+            if(indexplayer !== -1) {
+              /* If one oo more row was completed */
+              if(score - socket.score !== 0 && global[socket.room].length > 1 && global[socket.room].mode !== 'chill') {
+                /* Calculate the number of rows to send */
+                let numberofRowsToSend;
+                if(global[socket.room].mode === 'boom')
+                  numberofRowsToSend = (Math.floor((score - socket.score) / 10) + 1) % 15;
+                else numberofRowsToSend = (Math.floor((score - socket.score) / 10)) % 6;
+                if(numberofRowsToSend !== 0) {
+                  console.log(socket.pseudo + " send " + numberofRowsToSend + " row(s).");
+                  socket.in(socket.room).emit('message', socket.pseudo + ' send ' + numberofRowsToSend + " row(s) !", 'warning')
+                  for(let i = 0; i < numberofRowsToSend; i++) {
+                    let randPlayerIndex = randInt(global[socket.room].length - 1); // Pick a random player
+                    if(randPlayerIndex == indexplayer) { // If it picked itself
+                      if(typeof(global[socket.room][indexplayer + 1] !== 'undefined')) // Check if the personn above exist
+                        randPlayerIndex++; // Pick that player
+                      else randPlayerIndex--; // Else, pick the player below
+                    }
+                    let playerId = global[socket.room][randPlayerIndex].id; // ID of the player receiving the row
+                    socket.in(socket.room).emit('addRow', playerId); // Send him the row
+                    console.log(global[socket.room][randPlayerIndex].pseudo + " got a additional row from " + socket.pseudo);
                   }
-                  let playerId = global[socket.room][randPlayerIndex].id; // ID of the player receiving the row
-                  socket.in(socket.room).emit('addRow', playerId); // Send him the row
-                  console.log(global[socket.room][randPlayerIndex].pseudo + " got a additional row from " + socket.pseudo);
                 }
               }
+
+              /* Update the global state with the infos sent by the user */
+              socket.score = score;
+              global[socket.room][indexplayer].score = socket.score;
+              global[socket.room][indexplayer].board = board;
+
+
+              orderGlobal(socket.room); // Rank the players
+
+              /* Send the global ranking to everyone */
+              socket.emit('classement', global[socket.room]);
+              socket.in(socket.room).emit('classement', global[socket.room]);
+            }
+            else {
+              console.log("ERROR : [SCORE] Player not found" +
+                "\nRoom : " + socket.room +
+                "\nPseudo : " + socket.pseudo +
+                "\nID : " + socket.id +
+                "\nScore : " + socket.score
+              );
+              console.log(global);
             }
 
-            /* Update the global state with the infos sent by the user */
-            socket.score = score;
-            global[socket.room][indexplayer].score = socket.score;
-            global[socket.room][indexplayer].board = board;
-
-
-            orderGlobal(socket.room); // Rank the players
-
-            /* Send the global ranking to everyone */
-            socket.emit('classement', global[socket.room]);
-            socket.in(socket.room).emit('classement', global[socket.room]);
           }
           else if(typeof(globalBR[socket.room]) !== 'undefined') {
             let indexplayer; // Index of the player in the global state
@@ -447,7 +482,7 @@ io.on('connection', function (socket) {
           }
         }
         else {
-          console.log("ERROR : [SCORE] Player not recognized !" +
+          console.log("ERROR : [SCORE] Room not found" +
             "\nRoom : " + socket.room +
             "\nPseudo : " + socket.pseudo +
             "\nID : " + socket.id +
@@ -658,85 +693,143 @@ function killAfk(socket, sendMessage) {
   /* Look out for AFKs and KILL THEM */
   let now = (new Date()).getTime();
   for(let i = 0; i < lastEmits.length; i++) {
-    if(now - lastEmits[i].time > 60000) { // 1 min
+    if(now - lastEmits[i].time > 11000) { // 11 sec
 
       let afkPlayer = lastEmits[i];
 
-      if(typeof(global[afkPlayer.room]) !== 'undefined') {
-        let indexplayer; // Index of the player in the global state
-        for (let j = 0; j < global[afkPlayer.room].length; j++) {
-            if (global[afkPlayer.room][j].id === afkPlayer.id) {
-                indexplayer = j;
-                break;
-            }
-        }
-
-        /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
-        if(typeof(global[afkPlayer.room][indexplayer]) !== 'undefined') {
-
-          if(sendMessage) socket.emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
-          socket.in(afkPlayer.room).emit('message', global[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
-
-          socket.emit('died', global[afkPlayer.room][indexplayer].id);
-          socket.in(lastEmits[i].room).emit('died', global[afkPlayer.room][indexplayer].id);
-
-          console.log(
-            global[afkPlayer.room][indexplayer].pseudo +
-            " was kicked due to AFKness with " +
-            global[afkPlayer.room][indexplayer].score +
-            " points."
-          );
-
-          global[afkPlayer.room].splice(indexplayer, 1);
-          lastEmits.splice(i, 1);
-
-          if(global[afkPlayer.room].length < 1) {
-            delete rooms[afkPlayer.room];
-            delete global[afkPlayer.room];
-            socket.in(afkPlayer.room).in("spectator").emit('stopSpectate');
+      if(afkPlayer.state === "inGame") {
+        if(typeof(global[afkPlayer.room]) !== 'undefined') {
+          let indexplayer; // Index of the player in the global state
+          for (let j = 0; j < global[afkPlayer.room].length; j++) {
+              if (global[afkPlayer.room][j].id === afkPlayer.id) {
+                  indexplayer = j;
+                  break;
+              }
           }
-          break;
-        }
-      }
-      else if(typeof(globalBR[afkPlayer.room]) !== 'undefined') {
-        let indexplayer; // Index of the player in the global state
-        for (let j = 0; j < globalBR[afkPlayer.room].length; j++) {
-            if (globalBR[afkPlayer.room][j].id === afkPlayer.id) {
-                indexplayer = j;
-                break;
+
+          /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
+          if(typeof(global[afkPlayer.room][indexplayer]) !== 'undefined') {
+
+            if(sendMessage) socket.emit('message', afkPlayer.pseudo + ' was kicked due to AKFness.', 'info');
+            socket.in(afkPlayer.room).emit('message', afkPlayer.pseudo + ' was kicked due to AKFness.', 'info');
+
+            socket.emit('died', afkPlayer.id);
+            socket.in(lastEmits[i].room).emit('died', afkPlayer.id);
+
+            console.log(
+              afkPlayer.pseudo +
+              " was kicked due to AFKness with " +
+              afkPlayer.score +
+              " points."
+            );
+
+            global[afkPlayer.room].splice(indexplayer, 1);
+            lastEmits.splice(i, 1);
+
+            if(global[afkPlayer.room].length < 1) {
+              delete rooms[afkPlayer.room];
+              delete global[afkPlayer.room];
+              socket.in(afkPlayer.room).in("spectator").emit('stopSpectate');
             }
-        }
-
-        /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
-        if(typeof(globalBR[afkPlayer.room][indexplayer]) !== 'undefined') {
-
-          if(sendMessage) socket.emit('message', globalBR[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
-          socket.in(afkPlayer.room).emit('message', globalBR[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
-
-          socket.emit('died', globalBR[afkPlayer.room][indexplayer].id);
-          socket.in(lastEmits[i].room).emit('died', globalBR[afkPlayer.room][indexplayer].id);
-
-          console.log(
-            globalBR[afkPlayer.room][indexplayer].pseudo +
-            " was kicked due to AFKness with " +
-            globalBR[afkPlayer.room][indexplayer].score +
-            " points."
-          );
-
-          globalBR[afkPlayer.room].splice(indexplayer, 1);
-          lastEmits.splice(i, 1);
-
-          if(globalBR[afkPlayer.room].length < 1) {
-            brRooms[afkPlayer.room].state = "preparating";
           }
-          break;
+        }
+        else if(typeof(globalBR[afkPlayer.room]) !== 'undefined') {
+          let indexplayer; // Index of the player in the global state
+          for (let j = 0; j < globalBR[afkPlayer.room].length; j++) {
+              if (globalBR[afkPlayer.room][j].id === afkPlayer.id) {
+                  indexplayer = j;
+                  break;
+              }
+          }
+
+          /* Say to everyone that someone is AFK. That someone will recognize himself and stop to play */
+          if(typeof(globalBR[afkPlayer.room][indexplayer]) !== 'undefined') {
+
+            if(sendMessage) socket.emit('message', globalBR[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
+            socket.in(afkPlayer.room).emit('message', globalBR[afkPlayer.room][indexplayer].pseudo + ' was kicked due to AKFness.', 'info');
+
+            socket.emit('died', globalBR[afkPlayer.room][indexplayer].id);
+            socket.in(lastEmits[i].room).emit('died', globalBR[afkPlayer.room][indexplayer].id);
+
+            console.log(
+              globalBR[afkPlayer.room][indexplayer].pseudo +
+              " was kicked due to AFKness with " +
+              globalBR[afkPlayer.room][indexplayer].score +
+              " points."
+            );
+
+            globalBR[afkPlayer.room].splice(indexplayer, 1);
+            lastEmits.splice(i, 1);
+
+            if(globalBR[afkPlayer.room].length < 1) {
+              brRooms[afkPlayer.room].state = "preparating";
+            }
+            break;
+          }
         }
       }
-      else {
-        console.log("There's an AFK, but where ?");
+      else if(afkPlayer.state === "inRoom") {
+        if(typeof(rooms[afkPlayer.room]) !== 'undefined') {
+          let indexplayer = -1;
+          for(let j = 0; j < rooms[afkPlayer.room].length; j++) {
+            if(rooms[afkPlayer.room][j].id === afkPlayer.id) {
+              indexplayer = j;
+              break;
+            }
+          }
+
+          if(indexplayer !== -1) {
+            if(sendMessage) socket.emit('message', afkPlayer.pseudo + ' was kicked from room due to AKFness.', 'info');
+            socket.in(afkPlayer.room).emit('message', afkPlayer.pseudo + ' was kicked from room due to AKFness.', 'info');
+
+            socket.emit('kickedFromRoom', afkPlayer.id);
+            socket.in(afkPlayer.room).emit('kickedFromRoom', afkPlayer.id);
+
+            console.log(
+              afkPlayer.pseudo + " was kicked from room " + afkPlayer.room + " due to AFKness"
+            );
+
+            rooms[afkPlayer.room].splice(indexplayer, 1);
+            lastEmits.splice(i, 1);
+
+            socket.in(afkPlayer.room).emit('roomPlayers', rooms[afkPlayer.room], afkPlayer.room, rooms[afkPlayer.room].mode);
+
+            if(rooms[afkPlayer.room].length < 1) {
+              delete rooms[afkPlayer.room];
+            }
+          }
+        }
+        else if(typeof(brRooms[afkPlayer.room]) !== 'undefined') {
+          let indexplayer = -1;
+          for(let j = 0; j < brRooms[afkPlayer.room].length; j++) {
+            if(brRooms[afkPlayer.room][j].id === afkPlayer.id) {
+              indexplayer = j;
+              break;
+            }
+          }
+
+          if(indexplayer !== -1) {
+            if(sendMessage) socket.emit('message', afkPlayer.pseudo + ' was kicked from room due to AKFness.', 'info');
+            socket.in(afkPlayer.room).emit('message', afkPlayer.pseudo + ' was kicked from room due to AKFness.', 'info');
+
+            socket.emit('kickedFromRoom', afkPlayer.id);
+            socket.in(afkPlayer.room).emit('kickedFromRoom', afkPlayer.id);
+
+            console.log(
+              afkPlayer.pseudo + " was kicked from room " + afkPlayer.room + " due to AFKness"
+            );
+
+            brRooms[afkPlayer.room].splice(indexplayer, 1);
+            lastEmits.splice(i, 1);
+
+            socket.in(afkPlayer.room).emit('roomPlayers', brRooms[afkPlayer.room], afkPlayer.room, 'br');
+
+            if(brRooms[afkPlayer.room].length < 1) {
+              brRooms.splice(afkPlayer.room, 1);
+            }
+          }
+        }
       }
-
-
     }
   }
 }
