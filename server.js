@@ -96,9 +96,7 @@ io.on('connection', function (socket) {
         else if(rooms[room].state === "preparating") {
 
           if(mode !== rooms[room].mode) {
-            if(rooms[room].mode === 'chill') socket.emit('okToPlay', false, "You must set your mode to Netflix 'nd chill to join that room.");
-            else if(rooms[room].mode === 'boom') socket.emit('okToPlay', false, "You must set your mode to Boom ! to join that room.");
-            else if(rooms[room].mode === 'basic') socket.emit('okToPlay', false, "You must set your mode to Basic to join that room.");
+            socket.emit('okToPlay', false, "You must set your mode to " + showMode(rooms[room].mode) + " to join that room.");
           }
           else {
             socket.emit('okToPlay', true, ' '); // The player can enter the room
@@ -126,6 +124,8 @@ io.on('connection', function (socket) {
     });
 
     socket.on('joinBrRoom', function(pseudo) {
+
+      console.log("Aie");
 
       socket.emit('okToPlay', true, ' '); // The player can enter the room, or create a new one
       socket.emit('This game mode is still in devellopement. Some bugs might occur');
@@ -787,4 +787,13 @@ function make2DArray(w, h, contained) {
 		}
 	}
 	return arr;
+}
+
+function showMode(mode) {
+  if(mode === 'basic') return "Basic";
+  else if(mode === 'chill') return "Netflix 'nd Chill";
+  else if(mode === 'boom') return "Boom !";
+  else if(mode === 'br') return "Battle Royal";
+  else if(mode === 'modified') return "Modified";
+  else return "WTF IS THIS MODE";
 }

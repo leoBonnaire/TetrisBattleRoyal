@@ -45,7 +45,9 @@ function joinBr() {
 function startGame() {
 	if(!gameStarted) {
     gameStarted = true; // The game starts
+    PIECES = PIECES_NORMAL;
     if(mode === 'chill') deltaT = 800;
+    else if(mode === 'modified') PIECES = PIECES_PASNORMAL;
     if(offline) pseudo = "Score ";
 		centerCanvas();
 		refreshDisplay(true); // Full refresh
@@ -241,9 +243,10 @@ function windowResized() {
 
 function changeMode(modeToSet) {
   mode = modeToSet;
-  if(document.getElementById('modeP') !== null)
+  if(document.getElementById('modeP') !== null) {
     document.getElementById('modeP').innerHTML = showMode(mode);
     document.getElementById('hoverMode').innerHTML = hoverMode(mode);
+  }
 }
 
 /* Output a random int */
@@ -270,13 +273,15 @@ function showMode(mode) {
   else if(mode === 'chill') return "Netflix 'nd Chill";
   else if(mode === 'boom') return "Boom !";
   else if(mode === 'br') return "Battle Royal";
+  else if(mode === 'modified') return "Modified";
   else return "WTF IS THIS MODE";
 }
 
 
 function hoverMode(mode) {
   if(mode === 'basic') return "Basic Tretis Gamemode (with LeaderBoard)";
-  else if(mode === 'chill') return "Chill Gamemode (not in LeaderBoard)";
-  else if(mode === 'boom') return "Fun and explosive Gamemode ! (not in LeaderBoard)";
+  else if(mode === 'chill') return "Chill Gamemode (no LeaderBoard)";
+  else if(mode === 'boom') return "Fun and explosive Gamemode ! (no LeaderBoard)";
+  else if(mode === 'modified') return "Basic game with modified pieces, so it's harder (no LeaderBoard)";
   else return "WTF IS THIS MODE";
 }

@@ -9,16 +9,7 @@
 
 */
 
-/* Array of every pieces */
-const PIECES = [
-    [Z, 3],
-    [S, 4],
-    [T, 5],
-    [O, 6],
-    [L, 7],
-    [I, 8],
-    [J, 9]
-];
+let PIECES = PIECES_NORMAL;
 
 /* Return a random Piece */
 function randomPiece(){

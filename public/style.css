@@ -42,16 +42,7 @@ td, th {
     position: fixed;
     left: 20px; top: 40px;
   }
-  #div3 {
-    position: fixed;
-    right: 20px; top: 40px;
-  }
 }
-
-<<<<<<< HEAD
-=======
-
->>>>>>> dc782a76e428b7ea29d0bfd27907caec41829d75
 
 .menuButton {
 	border: 2px solid white;
@@ -261,7 +252,7 @@ td, th {
 .bottomTables{
   display:flex;
   justify-content: center;
-  padding: 5%; 
+  padding: 5%;
 }
 .my-logo {
   color: #ffffff;
