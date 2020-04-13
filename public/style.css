@@ -219,7 +219,6 @@ td, th {
 {
   width:50%;
 }
-<<<<<<< HEAD
 .nes-icon
 {
   box-shadow:none;
@@ -257,7 +256,7 @@ td, th {
 .my-logo {
   color: #ffffff;
   font-size: 5vw;
-  font-family: "Press Start 2P";
+  font-family: inherit;
   font-style: "italic";
   font-weight: 500;
   text-shadow: #000000 1px 1px 0px, #000000 2px 2px 0px, #000000 3px 3px 0px, #000000 4px 4px 0px, #000000 5px 5px 0px, #000000 6px 6px 0px, #000000 7px 7px 0px, #000000 8px 8px 0px, #000000 9px 9px 0px, #000000 10px 10px 0px;
@@ -269,5 +268,3 @@ td, th {
   text-decoration:none;
   color:white;
 }
-=======
->>>>>>> dc782a76e428b7ea29d0bfd27907caec41829d75

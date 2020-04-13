@@ -243,7 +243,12 @@ function windowResized() {
 
 function changeMode(modeToSet) {
   mode = modeToSet;
+<<<<<<< HEAD
   if(document.getElementById('modeP') !== null) {
+=======
+  if(document.getElementById('modeP') !== null)
+  {
+>>>>>>> 460fa634f59626898e59b520884e30116f35b802
     document.getElementById('modeP').innerHTML = showMode(mode);
     document.getElementById('hoverMode').innerHTML = hoverMode(mode);
   }
