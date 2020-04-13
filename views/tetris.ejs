@@ -87,8 +87,11 @@
 
       <br><br>
       <div style="display: inline;">
-      <p style="display:inline">Gamemode : </p><div class="hover"><p style="display:inline" class="nes-text is-primary" id="modeP"><p><span id="hoverMode" class="hoverText"></span>
-      </div>
+        <p style="display:inline">Gamemode : </p>
+        <div class="hover">
+          <p style="display:inline" class="nes-text is-primary" id="modeP"><p>
+          <span id="hoverMode" class="hoverText"></span>
+        </div>
       </div>
         <form onsubmit="return enteredRoom()">
           <div class="nes-field">
@@ -99,10 +102,11 @@
             <br><br>
             <button class="nes-btn" type="submit">Join / Create</button><br><br>
         </form>
-      </div>
-        <div id="bottomTables" class="bottomTables">
 
+        <div id="bottomTables" class="bottomTables"></div>
+        
       </div>
+
         <div id='room' style="display: none;">
           <button class="nes-btn is-error" onclick="leaveRoom()">Leave room</button>
           <button class="nes-btn is-success" onclick="imReady()">Set ready</button>
@@ -123,12 +127,7 @@
         </form>
       </div>
       <div id="bottomTables" class="bottomTables">
-<<<<<<< HEAD
-
-=======
-          
       </div>
->>>>>>> 460fa634f59626898e59b520884e30116f35b802
         <div id='room' style="display: block;">
           <br><br>
         </div>

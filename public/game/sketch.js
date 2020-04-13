@@ -38,7 +38,7 @@ function roomHandler() {
 
 function joinBr() {
   pseudo = document.getElementById('pseudo').value;
-
+  document.getElementById("bottomTables").style.display = "none";
   socket.emit('joinBrRoom', pseudo);
 }
 
@@ -47,7 +47,12 @@ function startGame() {
     gameStarted = true; // The game starts
     PIECES = PIECES_NORMAL;
     if(mode === 'chill') deltaT = 800;
-    else if(mode === 'modified') PIECES = PIECES_PASNORMAL;
+    else if(mode === 'modified') {
+      PIECES = PIECES_PASNORMAL;
+      p = randomPiece(); // Initiate first piece
+      nextP = randomPiece(); // Initiate next piece
+    	preview = new Preview(p.tetromino, p.tetrominoN, p.x, p.y); // Initiate preview
+    }
     if(offline) pseudo = "Score ";
 		centerCanvas();
 		refreshDisplay(true); // Full refresh
@@ -243,12 +248,7 @@ function windowResized() {
 
 function changeMode(modeToSet) {
   mode = modeToSet;
-<<<<<<< HEAD
   if(document.getElementById('modeP') !== null) {
-=======
-  if(document.getElementById('modeP') !== null)
-  {
->>>>>>> 460fa634f59626898e59b520884e30116f35b802
     document.getElementById('modeP').innerHTML = showMode(mode);
     document.getElementById('hoverMode').innerHTML = hoverMode(mode);
   }

@@ -217,7 +217,7 @@ function dispAllTimeRanking() {
 	// Add it to the page
   document.getElementById('homeform').appendChild(listContainer);
   listContainer.appendChild(listElement);
-  
+
   document.getElementById('bottomTables').appendChild(listContainer);
 }
 
@@ -297,9 +297,7 @@ function displayPlayingRooms() {
 
 		subListItem1.innerHTML = allRooms[i].name;
 
-		if(allRooms[i].mode == 'basic') subListItem2.innerHTML = "Basic";
-		if(allRooms[i].mode == 'chill') subListItem2.innerHTML = "Netflix 'nd chill'";
-		if(allRooms[i].mode == 'boom') subListItem2.innerHTML = "Boom !";
+		subListItem2.innerHTML = showMode(allRooms[i].mode);
 
 		subListItem3.innerHTML = allRooms[i].state.toUpperCase();
 
