@@ -16,6 +16,7 @@ Change the IP in `serverSettings.js` (in the `public` folder) to yours (go to [M
 
 You can also change the port for the server but we recommand you to keep the port 3000 as default.
 
+
 Now you need to open the port (3000 as default) on your router to let everyone connect to your server.
 
 ### Windows
@@ -43,5 +44,9 @@ node server.js | tee log.txt
 Go to your browser and type your IP, then ":" and finally the port you set (3000 as default).
 
 Example : If your IP is 79.92.163.180, you have to go to `79.92.163.180:3000`
+<<<<<<< HEAD
+=======
+
+>>>>>>> 153be0644d30a3b937015a7934096f14080e346f
 
 Now everyone around the world is able to access your server by typing the same thing is their browser (with you IP).
