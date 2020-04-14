@@ -4,6 +4,10 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const settings = require('./serverSettings'); // Server settings
+
+console.log("Launching Tretis server on " + settings.ip + " on port " + settings.port + " ..."); // Message at the server start
+
 /* Private rooms */
 
 let global = []; // Store the whole game state (of every player)
@@ -18,8 +22,7 @@ let globalBR = [];
 let brRooms = [];
 let nbOfPlayersToStartBr = 2;
 
-
-server.listen(3000); // Listen
+server.listen(settings.port); // Listen
 
 app.use(express.static('public'))
 app.use('/nes.css', express.static(__dirname + '/node_modules/nes.css/css/'));
@@ -33,6 +36,9 @@ app.get('/pr/', function (req, res) {
 app.get('/br/', function (req, res) {
   res.render('tetris.ejs', {page:"br"});
 });
+
+console.log("Server started successfully !");
+console.log("Go to " + settings.ip + ":" + settings.port + " in your browser to play");
 
 /* Handle a new connection */
 io.on('connection', function (socket) {
