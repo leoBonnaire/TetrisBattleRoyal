@@ -43,7 +43,7 @@ node server.js | tee log.txt
 
 Go to your browser and type your IP, then ":" and finally the port you set (3000 as default).
 
-Example : If your IP is 79.92.163.180, you have to go to `89.91.162.180:3000`
+Example : If your IP is 79.92.163.180, you have to go to `79.92.163.180:3000`
 
 
 Now everyone around the world is able to access your server by typing the same thing is their browser (with you IP).
