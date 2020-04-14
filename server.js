@@ -4,7 +4,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const settings = require('./serverSettings'); // Server settings
+const settings = require('./public/serverSettings'); // Server settings
 
 console.log("Launching Tretis server on " + settings.ip + " on port " + settings.port + " ..."); // Message at the server start
 
