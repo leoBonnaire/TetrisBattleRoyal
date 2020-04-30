@@ -531,17 +531,7 @@ io.on('connection', function (socket) {
                  }
                  rooms[socket.room].splice(indexRooms, 1);
 
-                 /* Check if you enter in the allTimes Ranking */
-                 if(global[socket.room].mode == "basic"  && global[socket.room][i].score > allTimeglobal[allTimeglobal.length - 1].score) {
-                    allTimeglobal[allTimeglobal.length - 1] = {
-                      pseudo: global[socket.room][i].pseudo,
-                      score: global[socket.room][i].score
-                    };
-                    console.log("The player entered in the leaderboard with " + global[socket.room][i].score + " points.");
-                    orderAllTimeGlobal();
-                    socket.emit('death', true);
-                 }
-                 else socket.emit('death', false);
+                 socket.emit('death', false);
 
                  global[socket.room].splice(i, 1);
 
